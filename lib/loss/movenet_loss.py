@@ -70,7 +70,7 @@ class MovenetLoss():
 
         c = tf.abs(pre - target)
         a = tf.reduce_sum(c * kps_mask)
-        b = (kps_mask.sum() + 1e-4)
+        b = (tf.reduce_sum(kps_mask) + 1e-4)
         # return tf.reduce_sum(tf.abs(pre - target) * kps_mask) / (kps_mask.sum() + 1e-4)
         return a / b
 
@@ -247,7 +247,7 @@ class MovenetLoss():
             gt_y = tf.convert_to_tensor(gt_y, dtype=tf.float32)
             pre_x = tf.convert_to_tensor(pre_x, dtype=tf.float32)
             pre_y = tf.convert_to_tensor(pre_y, dtype=tf.float32)
-            
+
             # gt_x = tf.gather(target, (_dim0, _dim1 + idx * 2, cy0, cx0))
             # gt_y = tf.gather(target, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
 
