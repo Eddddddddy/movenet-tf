@@ -287,6 +287,7 @@ class MovenetLoss():
             # 加权取最靠近中间的
 
         n, c, h, w = heatmap.shape
+        print(heatmap)
         heatmap = tf.reshape(heatmap, (n, -1))
         # print(heatmap[0])
         # max_id = torch.argmax(heatmap, 1)#64, 1
