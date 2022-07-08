@@ -335,7 +335,7 @@ class MovenetLoss():
 
         if not self.make_center_w:
             self.center_weight = tf.reshape(self.center_weight, (1, 1, 48, 48))
-            self.center_weight = self.center_weight.repeat((output[1].shape[0], output[1].shape[1], 1, 1))
+            self.center_weight = tf.tile(self.center_weight, (output[1].shape[0], output[1].shape[1], 1, 1))
             # print(self.center_weight.shape)
             # b
             self.center_weight = self.center_weight.to(target.device)
