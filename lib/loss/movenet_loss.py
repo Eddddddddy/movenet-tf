@@ -233,17 +233,21 @@ class MovenetLoss():
         for idx in range(num_joints):
             # gt_x = target[_dim0, _dim1 + idx * 2, cy0, cx0]
             # print(target)
-            gt_x = tf.zeros(batch_size)
-            gt_y = tf.zeros(batch_size)
-            pre_x = tf.zeros(batch_size)
-            pre_y = tf.zeros(batch_size)
+            gt_x = np.zeros(batch_size)
+            gt_y = np.zeros(batch_size)
+            pre_x = np.zeros(batch_size)
+            pre_y = np.zeros(batch_size)
             for idx2, (i, j, k, l) in enumerate(zip(_dim0, _dim1 + idx * 2, cy0, cx0)):
                 gt_x[idx2] = target[i, j, k, l]
                 pre_x[idx2] = pred[i, j, k, l]
                 gt_y[idx2] = target[i, j+1, k, l]
                 pre_y[idx2] = pred[i, j+1, k, l]
 
-
+            gt_x = tf.convert_to_tensor(gt_x, dtype=tf.float32)
+            gt_y = tf.convert_to_tensor(gt_y, dtype=tf.float32)
+            pre_x = tf.convert_to_tensor(pre_x, dtype=tf.float32)
+            pre_y = tf.convert_to_tensor(pre_y, dtype=tf.float32)
+            
             # gt_x = tf.gather(target, (_dim0, _dim1 + idx * 2, cy0, cx0))
             # gt_y = tf.gather(target, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
 
