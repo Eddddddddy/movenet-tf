@@ -10,14 +10,14 @@ import cv2
 import tensorflow as tf
 
 from lib.task.task_tools import getSchedu, getOptimizer, movenetDecode
-# from lib.loss.movenet_loss import MovenetLoss
+from lib.loss.movenet_loss import MovenetLoss
 from lib.utils.utils import printDash
 from lib.utils.metrics import myAcc
 
 from tqdm import tqdm
 
 
-class Task():
+class Task:
     def __init__(self, cfg, model):
 
         self.cfg = cfg
@@ -27,7 +27,7 @@ class Task():
         # else:
         #     self.device = torch.device("cpu")
 
-        # self.model = model.to(self.device)
+        self.model = model
 
         ############################################################
         # loss
@@ -40,7 +40,7 @@ class Task():
                                       self.cfg['weight_decay'])
 
         # scheduler
-        self.scheduler = getSchedu(self.cfg['scheduler'], self.optimizer)
+        # self.scheduler = getSchedu(self.cfg['scheduler'], self.optimizer)
 
     def train(self, train_loader, val_loader):
 
@@ -304,8 +304,8 @@ class Task():
             with tf.GradientTape() as tape:
                 output = self.model(imgs)
 
-                # heatmap_loss, bone_loss, center_loss, regs_loss, offset_loss = self.loss_func(output, labels, kps_mask)
-                heatmap_loss, bone_loss, center_loss, regs_loss, offset_loss = [0.1, 0.1, 0.1, 0.1, 0.1]
+                heatmap_loss, bone_loss, center_loss, regs_loss, offset_loss = self.loss_func(output, labels, kps_mask)
+                # heatmap_loss, bone_loss, center_loss, regs_loss, offset_loss = [0.1, 0.1, 0.1, 0.1, 0.1]
                 total_loss = heatmap_loss + center_loss + regs_loss + offset_loss + bone_loss
 
             grads = tape.gradient(total_loss, self.model.variables)

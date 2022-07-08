@@ -8,8 +8,10 @@ import numpy as np
 import cv2
 import json
 import copy
+import tensorflow as tf
 
-from lib.data.data_tools import getDataLoader, getFileNames
+from lib.data.data_augment import DataAug
+from lib.data.data_tools import getDataLoader, getFileNames, TensorDataset
 from lib.task.task_tools import movenetDecode
 
 
@@ -120,6 +122,19 @@ class Data():
         #         break
 
         input_data = [train_label_list, val_label_list]
+
+        # dl = TensorDataset(input_data[0],
+        #                    self.cfg['img_path'],
+        #                    self.cfg['img_size'],
+        #                    self.dataset_h5,
+        #                    DataAug(self.cfg['img_size'])
+        #                    )
+        # d = next(iter(dl))
+        # 0: ndarray (3, 192, 192)
+        # 1: ndarray (86, 48, 48)
+        # 2: ndarray (17,)
+        # 3: str
+        # v = tf.type_spec_from_value(d.index(0))
         train_loader, val_loader = getDataLoader("trainval",
                                                  input_data,
                                                  self.cfg,

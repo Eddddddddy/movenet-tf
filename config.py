@@ -18,9 +18,9 @@ cfg = {
 
     ##### Train Setting
     'img_path': "../datasets/data/croped/imgs",
-    'train_label_path': '../datasets/data/croped/train2017.json',
+    'train_label_path': '../datasets/data/croped/val2017.json',
     'val_label_path': '../datasets/data/croped/val2017.json',
-    'dataset_h5': '../datasets/data/croped/H5_Dataset',
+    'dataset_h5': '../datasets/data/croped/H5_DatasetVal',
     'datasetval_h5': '../datasets/data/croped/H5_DatasetVal',
     'balance_data': False,
 
@@ -34,7 +34,8 @@ cfg = {
     'batch_size': 128,  # 64
     'epochs': 120,
     'optimizer': 'Adam',  # Adam  SGD
-    'scheduler': 'MultiStepLR-70,100-0.1',  # default  SGDR-5-2  CVPR   step-4-0.8 MultiStepLR
+    # 'scheduler': 'MultiStepLR-70,100-0.1',  # default  SGDR-5-2  CVPR   step-4-0.8 MultiStepLR
+    'scheduler': 'default-',
     'weight_decay': 5.e-4,  # 0.0001,
 
     'class_weight': None,  # [1., 1., 1., 1., 1., 1., 1., ]

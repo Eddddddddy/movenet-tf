@@ -420,23 +420,188 @@ def TensorDataset_tf(data_labels, img_dir, img_size, dataset_h5, data_aug):
         yield img, labels, kps_mask, img_path
 
 
+######## dataloader
+class TensorDataset:
+
+    def __init__(self, data_labels, img_dir, img_size, dataset_h5, data_aug=None):
+        # if dataset_h5 == 1:
+        #     self.dataset_h5 = h5py.File('./data/croped/H5_Dataset', 'r', driver='core', backing_store=False)
+        # else:
+        #     self.dataset_h5 = h5py.File('./data/croped/H5_DatasetVal', 'r', driver='core', backing_store=False)
+        self.data_labels = data_labels
+        self.img_dir = img_dir
+        self.data_aug = data_aug
+        self.img_size = img_size
+        self.dataset_h5 = dataset_h5
+        self.len = len(self.data_labels)
+        self.index = 0
+        self.interp_methods = [2, 3, 0, 1]
+
+    def __len__(self):
+        return self.len
+
+    def __call__(self):
+        for i in range(self.len):
+            yield self.__getitem__(i)
+
+    def __getitem__(self, index):
+        item = self.data_labels[index]
+        # print(len(self.data_labels), index)
+        # while 'yoga_img_514' not in item["img_name"]:
+        #     index+=1
+        #     item = self.data_labels[index]
+
+        # while len(item['other_centers'])==0:
+        #     index+=1
+        #     item = self.data_labels[index]
+        # print("----")
+        # if '000000103797_0' in item["img_name"]:
+        #     print(item)
+        """
+        item = {
+                     "img_name":save_name,
+                     "keypoints":save_keypoints,
+                     "center":save_center,
+                     "other_centers":other_centers,
+                     "other_keypoints":other_keypoints,
+                    }
+        """
+        # label_str_list = label_str.strip().split(',')
+        # [name,h,w,keypoints...]
+
+        # data = np.array(self.dataset_h5[item["img_name"]])  # write the data to hdf5 file
+        # img = Image.open(io.BytesIO(data))
+        # img = img.convert('RGB')
+        # img = img.resize((self.img_size, self.img_size), resample=random.choice(self.interp_methods))
+        # img = np.array(img)
+
+        img = self.dataset_h5[item["img_name"]]
+
+        #### Data Augmentation
+        # print(item)
+        if self.data_aug is not None:
+            img, item = self.data_aug(img, item)
+        # print(item)
+        # print()
+
+        # cv2.imwrite(os.path.join("img.jpg"), img)
+
+        img = img.astype(np.float32)
+        img = np.transpose(img, axes=[2, 0, 1])
+
+        keypoints = item["keypoints"]
+        center = item['center']
+        other_centers = item["other_centers"]
+        other_keypoints = item["other_keypoints"]
+
+        # print(keypoints)
+        # [0.640625   0.7760417  2, ] (21,)
+
+        kps_mask = np.ones(len(keypoints) // 3)
+        for i in range(len(keypoints) // 3):
+            ##0没有标注;1有标注不可见（被遮挡）;2有标注可见
+            if keypoints[i * 3 + 2] == 0:
+                kps_mask[i] = 0
+
+        # img = img.transpose((1,2,0))
+        # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        # cv2.imwrite(os.path.join("_img.jpg"), img)
+
+        heatmaps, sigma = label2heatmap(keypoints, other_keypoints, self.img_size)  # (17, 48, 48)
+        # 超出边界则设为全0
+
+        # img = img.transpose((1,2,0))
+        # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        # hm = cv2.resize(np.sum(heatmaps,axis=0)*255,(192,192))
+        # cv2.imwrite(os.path.join("_hm.jpg"), hm)
+        # cv2.imwrite(os.path.join("_img.jpg"), img)
+
+        cx = min(max(0, int(center[0] * self.img_size // 4)), self.img_size // 4 - 1)
+        cy = min(max(0, int(center[1] * self.img_size // 4)), self.img_size // 4 - 1)
+        # if '000000103797_0' in item["img_name"]:
+        #     print("---data_tools 404 cx,cy: ",cx,cy, center)
+
+        centers = label2center(cx, cy, other_centers, self.img_size, sigma)  # (1, 48, 48)
+        # cv2.imwrite(os.path.join("_img.jpg"), centers[0]*255)
+        # print(centers[0,21:26,21:26])
+        # print(centers[0,12:20,27:34])
+        # print(centers[0,y,x],x,y)
+
+        # cx2,cy2 = extract_keypoints(centers)
+
+        # cx2,cy2 = maxPoint(centers)
+        # cx2,cy2 = cx2[0][0],cy2[0][0]
+        # print(cx2,cy2)
+        # if cx!=cx2 or cy!=cy2:
+        #     # cv2.imwrite(os.path.join("_img.jpg"), centers[0]*255)
+        # print(centers[0,17:21,22:26])
+        #     print(cx,cy ,cx2,cy2)
+        #     raise Exception("center changed after label2center!")
+
+        # print(keypoints[0]*48,keypoints[1]*48)
+        regs = label2reg(keypoints, cx, cy, self.img_size)  # (14, 48, 48)
+        # cv2.imwrite(os.path.join("_regs.jpg"), regs[0]*255)
+        # print(regs[0][22:26,22:26])
+        # print(regs[1][22:26,22:26])
+
+        # print("regs[0,cy,cx]: ", regs[0,cy,cx])
+        # for i in range(14):
+        #     print(regs[i,y,x])
+
+        offsets = label2offset(keypoints, cx, cy, regs, self.img_size)  # (14, 48, 48)
+        # for i in range(14):
+        #     print(regs[i,y,x])
+
+        # print(heatmaps.shape, regs.shape, offsets.shape)
+
+        # img = img.transpose((1,2,0))
+        # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        # for i in range(7):
+        #     cv2.imwrite("_heatmaps%d.jpg" % i,cv2.resize(heatmaps[i]*255-i*20,(192,192)))
+        #     img[:,:,0]+=cv2.resize(heatmaps[i]*255-i*20,(192,192))
+        # cv2.imwrite(os.path.join("_img.jpg"), img)
+
+        labels = np.concatenate([heatmaps, centers, regs, offsets], axis=0)
+        # print(heatmaps.shape,centers.shape,regs.shape,offsets.shape,labels.shape)
+        # print(labels.shape)
+        img_path = item["img_name"]
+        self.index += 1
+        # v = tf.type_spec_from_value(labels)
+        # q = tf.type_spec_from_value(kps_mask)
+        # w = tf.type_spec_from_value(img_path)
+        img = tf.transpose(img, [1, 2, 0])
+        return img, labels, kps_mask, img_path
+
+    # def __next__(self):
+    #     if self.index > self.len:
+    #         raise StopIteration
+    #     item = self.data_labels[self.index]
+
 
 ###### get data loader
 def getDataLoader(mode, input_data, cfg, dataset_h5, datasetval_h5):
     if mode == "trainval":
-        train_loader = tf.data.Dataset.from_generator(TensorDataset_tf(input_data[0],
-                                                                       cfg['img_path'],
-                                                                       cfg['img_size'],
-                                                                       dataset_h5,
-                                                                       DataAug(cfg['img_size'])
-                                                                       )).batch(cfg['batch_size'])
+        ot = (
+            tf.TensorSpec(shape=(192, 192, 3), dtype=tf.float32),
+            tf.TensorSpec(shape=(86, 48, 48), dtype=tf.float32),
+            tf.TensorSpec(shape=(17,), dtype=tf.float64),
+            tf.TensorSpec(shape=(), dtype=tf.string)
+        )
+        train_loader = tf.data.Dataset.from_generator(TensorDataset(input_data[0],
+                                                                    cfg['img_path'],
+                                                                    cfg['img_size'],
+                                                                    dataset_h5,
+                                                                    DataAug(cfg['img_size'])
+                                                                    ),
+                                                      output_signature=ot).batch(cfg['batch_size'])
 
-        val_loader = tf.data.Dataset.from_generator(TensorDataset_tf(input_data[1],
-                                                                     cfg['img_path'],
-                                                                     cfg['img_size'],
-                                                                     datasetval_h5,
-                                                                     DataAug(cfg['img_size'])
-                                                                     )).batch(cfg['batch_size'])
+        val_loader = tf.data.Dataset.from_generator(TensorDataset(input_data[1],
+                                                                  cfg['img_path'],
+                                                                  cfg['img_size'],
+                                                                  datasetval_h5,
+                                                                  DataAug(cfg['img_size'])
+                                                                  ),
+                                                    output_signature=ot).batch(cfg['batch_size'])
 
         return train_loader, val_loader
 
@@ -481,7 +646,6 @@ def getDataLoader(mode, input_data, cfg, dataset_h5, datasetval_h5):
     #         pin_memory=False)
     #
     #     return data_loader
-
 
     else:
         raise Exception("Unknow mode.")
