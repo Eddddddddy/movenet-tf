@@ -209,7 +209,7 @@ class MovenetLoss():
         _dim0 = tf.cast(_dim0, tf.int64)
 
         _dim1 = tf.zeros(batch_size)
-        _dim1 = tf.cast(_dim1, tf.int64).numpy()
+        _dim1 = tf.cast(_dim1, tf.int64)
 
         # print("regsLoss: " , cx0,cy0)
         # print(target.shape)#torch.Size([1, 14, 48, 48])
@@ -246,10 +246,10 @@ class MovenetLoss():
         return loss / num_joints
 
     def offsetLoss(self, pred, target, cx0, cy0, regs, kps_mask, batch_size, num_joints):
-        _dim0 = tf.range(0, batch_size).to_int64()
-        _dim0 = tf.cast(_dim0, tf.int64).numpy()
-        _dim1 = tf.zeros(batch_size).to_int64()
-        _dim1 = tf.cast(_dim1, tf.int64).numpy()
+        _dim0 = tf.range(0, batch_size)
+        _dim0 = tf.cast(_dim0, tf.int64)
+        _dim1 = tf.zeros(batch_size)
+        _dim1 = tf.cast(_dim1, tf.int64)
         loss = 0
         # print(gt_y,gt_x)
         for idx in range(num_joints):
@@ -358,9 +358,9 @@ class MovenetLoss():
         cx0, cy0 = self.maxPointPth(centers)
         # cx1, cy1 = self.maxPointPth(pre_centers)
         # cx0 = tf.clip_by_value(cx0, 0, _feature_map_size - 1).to_int64()
-        cx0 = tf.cast(tf.clip_by_value(cx0, 0, _feature_map_size - 1), tf.int64).numpy()
+        cx0 = tf.cast(tf.clip_by_value(cx0, 0, _feature_map_size - 1), tf.int64)
         # cy0 = tf.clip_by_value(cy0, 0, _feature_map_size - 1).to_int64()
-        cy0 = tf.cast(tf.clip_by_value(cy0, 0, _feature_map_size - 1), tf.int64).numpy()
+        cy0 = tf.cast(tf.clip_by_value(cy0, 0, _feature_map_size - 1), tf.int64)
         # cx1 = torch.clip(cx1,0,_feature_map_size-1).long()
         # cy1 = torch.clip(cy1,0,_feature_map_size-1).long()
 
