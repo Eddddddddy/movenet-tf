@@ -352,8 +352,10 @@ class MovenetLoss():
 
         cx0, cy0 = self.maxPointPth(centers)
         # cx1, cy1 = self.maxPointPth(pre_centers)
-        cx0 = tf.clip_by_value(cx0, 0, _feature_map_size - 1).to_int64()
-        cy0 = tf.clip_by_value(cy0, 0, _feature_map_size - 1).to_int64()
+        # cx0 = tf.clip_by_value(cx0, 0, _feature_map_size - 1).to_int64()
+        cx0 = tf.cast(tf.clip_by_value(cx0, 0, _feature_map_size - 1), tf.int64)
+        # cy0 = tf.clip_by_value(cy0, 0, _feature_map_size - 1).to_int64()
+        cy0 = tf.cast(tf.clip_by_value(cy0, 0, _feature_map_size - 1), tf.int64)
         # cx1 = torch.clip(cx1,0,_feature_map_size-1).long()
         # cy1 = torch.clip(cy1,0,_feature_map_size-1).long()
 
