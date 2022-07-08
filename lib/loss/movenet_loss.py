@@ -62,7 +62,11 @@ class MovenetLoss():
         # return torch.mean(torch.abs(pre - target)*kps_mask)
         pre = tf.cast(pre, tf.float64)
         target = tf.cast(target, tf.float64)
-        return tf.reduce_sum(tf.abs(pre - target) * kps_mask) / (kps_mask.sum() + 1e-4)
+        c = tf.abs(pre - target)
+        a = tf.reduce_sum(c * kps_mask)
+        b = (kps_mask.sum() + 1e-4)
+        # return tf.reduce_sum(tf.abs(pre - target) * kps_mask) / (kps_mask.sum() + 1e-4)
+        return a / b
 
     def l2_loss(self, pre, target):
         loss = (pre - target)
