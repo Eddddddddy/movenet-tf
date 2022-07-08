@@ -221,10 +221,13 @@ class MovenetLoss():
         for idx in range(num_joints):
             # gt_x = target[_dim0, _dim1 + idx * 2, cy0, cx0]
             gt_x = tf.gather(target, (_dim0, _dim1 + idx * 2, cy0, cx0))
-            gt_y = target[_dim0, _dim1 + idx * 2 + 1, cy0, cx0]
+            gt_y = tf.gather(target, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
 
-            pre_x = pred[_dim0, _dim1 + idx * 2, cy0, cx0]
-            pre_y = pred[_dim0, _dim1 + idx * 2 + 1, cy0, cx0]
+            # pre_x = pred[_dim0, _dim1 + idx * 2, cy0, cx0]
+            # pre_y = pred[_dim0, _dim1 + idx * 2 + 1, cy0, cx0]
+
+            pre_x = tf.gather(pred, (_dim0, _dim1 + idx * 2, cy0, cx0))
+            pre_y = tf.gather(pred, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
 
             # print(torch.max(target[_dim0,_dim1+idx*2,:,:]),torch.min(target[_dim0,_dim1+idx*2,:,:]))
             # print(gt_x,pre_x)                                       
@@ -254,19 +257,27 @@ class MovenetLoss():
         loss = 0
         # print(gt_y,gt_x)
         for idx in range(num_joints):
-            gt_x = regs[_dim0, _dim1 + idx * 2, cy0, cx0].long() + cx0
-            gt_y = regs[_dim0, _dim1 + idx * 2 + 1, cy0, cx0].long() + cy0
+            # gt_x = regs[_dim0, _dim1 + idx * 2, cy0, cx0].long() + cx0
+            gt_x = tf.gather(regs, (_dim0, _dim1 + idx * 2, cy0, cx0))
+            gt_x = tf.cast(gt_x, tf.int32) + cx0
+            # gt_y = regs[_dim0, _dim1 + idx * 2 + 1, cy0, cx0].long() + cy0
+            gt_y = tf.gather(regs, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
+            gt_y = tf.cast(gt_y, tf.int32) + cy0
 
             gt_x[gt_x > 47] = 47
             gt_x[gt_x < 0] = 0
             gt_y[gt_y > 47] = 47
             gt_y[gt_y < 0] = 0
 
-            gt_offset_x = target[_dim0, _dim1 + idx * 2, gt_y, gt_x]
-            gt_offset_y = target[_dim0, _dim1 + idx * 2 + 1, gt_y, gt_x]
+            # gt_offset_x = target[_dim0, _dim1 + idx * 2, gt_y, gt_x]
+            # gt_offset_y = target[_dim0, _dim1 + idx * 2 + 1, gt_y, gt_x]
+            gt_offset_x = tf.gather(target, (_dim0, _dim1 + idx * 2, gt_y, gt_x))
+            gt_offset_y = tf.gather(target, (_dim0, _dim1 + idx * 2 + 1, gt_y, gt_x))
 
-            pre_offset_x = pred[_dim0, _dim1 + idx * 2, gt_y, gt_x]
-            pre_offset_y = pred[_dim0, _dim1 + idx * 2 + 1, gt_y, gt_x]
+            # pre_offset_x = pred[_dim0, _dim1 + idx * 2, gt_y, gt_x]
+            # pre_offset_y = pred[_dim0, _dim1 + idx * 2 + 1, gt_y, gt_x]
+            pre_offset_x = tf.gather(pred, (_dim0, _dim1 + idx * 2, gt_y, gt_x))
+            pre_offset_y = tf.gather(pred, (_dim0, _dim1 + idx * 2 + 1, gt_y, gt_x))
 
             # print(gt_offset_x, torch.max(target[_dim0,_dim1+idx*2,...]),torch.min(target[_dim0,_dim1+idx*2,...]))
             # print(gt_offset_y, torch.max(target[_dim0,_dim1+idx*2+1,...]),torch.min(target[_dim0,_dim1+idx*2+1,...]))
