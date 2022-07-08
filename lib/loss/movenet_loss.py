@@ -60,8 +60,14 @@ class MovenetLoss():
         # b
 
         # return torch.mean(torch.abs(pre - target)*kps_mask)
+
+        print("pre ", pre.shape)
+        print("target ", target.shape)
+        print("kps_mask ", kps_mask.shape)
+
         pre = tf.cast(pre, tf.float64)
         target = tf.cast(target, tf.float64)
+
         c = tf.abs(pre - target)
         a = tf.reduce_sum(c * kps_mask)
         b = (kps_mask.sum() + 1e-4)
