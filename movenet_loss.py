@@ -152,8 +152,9 @@ class MovenetLoss(tf.keras.Model):
             self.make_center_w = True
 
         cx0, cy0 = self.maxPointPth(centers)
-        cx0 = tf.clip_by_value(cx0, 0, _feature_map_size - 1).to_int64()
-        cy0 = tf.clip_by_value(cy0, 0, _feature_map_size - 1).to_int64()
+        # cx0 = tf.clip_by_value(cx0, 0, _feature_map_size - 1).to_int64()
+        cx0 = tf.cast(tf.clip_by_value(cx0, 0, _feature_map_size - 1), tf.int64)
+        cy0 = tf.cast(tf.clip_by_value(cy0, 0, _feature_map_size - 1), tf.int64)
 
         regs_loss = self.regsLoss(output[2], regs, cx0, cy0, kps_mask, batch_size, num_joints)
         offset_loss = self.offsetLoss(output[3], offset, cx0, cy0, regs, kps_mask, batch_size, num_joints)
