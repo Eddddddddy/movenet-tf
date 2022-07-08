@@ -338,9 +338,9 @@ class MovenetLoss():
             self.center_weight = tf.tile(self.center_weight, (output[1].shape[0], output[1].shape[1], 1, 1))
             # print(self.center_weight.shape)
             # b
-            self.center_weight = self.center_weight.to(target.device)
+            # self.center_weight = self.center_weight
             self.make_center_w = True
-            self.center_weight.requires_grad_(False)
+            # self.center_weight.requires_grad_(False)
 
             # self.range_weight_x = self.range_weight_x.to(target.device)
             # self.range_weight_y = self.range_weight_y.to(target.device)
