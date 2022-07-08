@@ -205,8 +205,11 @@ class MovenetLoss():
         # [64, 14, 48, 48]
         # print(target.shape, cx0.shape, cy0.shape)#torch.Size([64, 14, 48, 48]) torch.Size([64]) torch.Size([64])
 
-        _dim0 = tf.range(0, batch_size).to_int64()
-        _dim1 = tf.zeros(batch_size).to_int64()
+        _dim0 = tf.range(0, batch_size)
+        _dim0 = tf.cast(_dim0, tf.int64)
+
+        _dim1 = tf.zeros(batch_size)
+        _dim1 = tf.cast(_dim1, tf.int64)
 
         # print("regsLoss: " , cx0,cy0)
         # print(target.shape)#torch.Size([1, 14, 48, 48])
@@ -244,7 +247,9 @@ class MovenetLoss():
 
     def offsetLoss(self, pred, target, cx0, cy0, regs, kps_mask, batch_size, num_joints):
         _dim0 = tf.range(0, batch_size).to_int64()
+        _dim0 = tf.cast(_dim0, tf.int64)
         _dim1 = tf.zeros(batch_size).to_int64()
+        _dim1 = tf.cast(_dim1, tf.int64)
         loss = 0
         # print(gt_y,gt_x)
         for idx in range(num_joints):
