@@ -291,8 +291,9 @@ class MovenetLoss():
         heatmap = tf.reshape(heatmap, (n, -1))
         # print(heatmap[0])
         # max_id = torch.argmax(heatmap, 1)#64, 1
+        max_id = tf.argmax(heatmap, axis=1)
         # print(max_id)
-        max_v, max_id = tf.reduce_max(heatmap, 1)  # 64, 1
+        # max_v, max_id = tf.reduce_max(heatmap, 1)  # 64, 1
         # print(max_v)
         # print("max_i: ",max_i)
 
