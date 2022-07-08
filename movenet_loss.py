@@ -124,7 +124,7 @@ class MovenetLoss(tf.keras.Model):
         if center:
             heatmap = heatmap * self.center_weight[:heatmap.shape[0], ...]
         n, c, h, w = heatmap.shape
-        heatmap = heatmap.reshape((n, -1))
+        heatmap = tf.reshape(heatmap, (n, -1))
         max_id = tf.argmax(heatmap, axis=1)
         y = max_id // w
         x = max_id % w
