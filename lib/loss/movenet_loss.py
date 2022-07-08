@@ -232,6 +232,7 @@ class MovenetLoss():
         loss = 0
         for idx in range(num_joints):
             # gt_x = target[_dim0, _dim1 + idx * 2, cy0, cx0]
+            print(target)
             gt_x = tf.gather(target, (_dim0, _dim1 + idx * 2, cy0, cx0))
             gt_y = tf.gather(target, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
 
@@ -245,10 +246,10 @@ class MovenetLoss():
             # print(gt_x,pre_x)                                       
             # print(gt_y,pre_y)
 
-            print(kps_mask[:, idx])
-            print(gt_x, pre_x)
-            print(self.l1(gt_x, pre_x, kps_mask[:, idx]))
-            print('---')
+            # print(kps_mask[:, idx])
+            # print(gt_x, pre_x)
+            # print(self.l1(gt_x, pre_x, kps_mask[:, idx]))
+            # print('---')
 
             loss += self.l1(gt_x, pre_x, kps_mask[:, idx])
             loss += self.l1(gt_y, pre_y, kps_mask[:, idx])
