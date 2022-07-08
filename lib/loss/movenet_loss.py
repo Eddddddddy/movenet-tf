@@ -307,8 +307,12 @@ class MovenetLoss():
 
     def __call__(self, output, target, kps_mask):
         # print("output: ", output.shape)
+        output = tf.transpose(output, [0, 2, 3, 1])
         batch_size = output[0].shape[0]
+        print("batch_size: ", batch_size)
         num_joints = output[0].shape[1]
+        print("num_joints: ", num_joints)
+
         # print("output: ", [x.shape for x in output])
         # [64, 7, 48, 48] [64, 1, 48, 48] [64, 14, 48, 48] [64, 14, 48, 48]
         # print("target: ", [x.shape for x in target])#[64, 36, 48, 48]
