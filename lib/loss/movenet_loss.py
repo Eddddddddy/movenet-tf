@@ -215,7 +215,7 @@ class MovenetLoss():
 
     def regsLoss(self, pred, target, cx0, cy0, kps_mask, batch_size, num_joints):
         # [64, 14, 48, 48]
-        print('regsLoss', target.shape, cx0.shape, cy0.shape)#torch.Size([64, 14, 48, 48]) torch.Size([64]) torch.Size([64])
+        # print('regsLoss', target.shape, cx0.shape, cy0.shape)#torch.Size([64, 14, 48, 48]) torch.Size([64]) torch.Size([64])
 
         _dim0 = tf.range(0, batch_size, dtype=tf.int32)
         # _dim0 = tf.cast(_dim0, tf.int64)
@@ -232,15 +232,26 @@ class MovenetLoss():
         loss = 0
         for idx in range(num_joints):
             # gt_x = target[_dim0, _dim1 + idx * 2, cy0, cx0]
-            print(target)
-            gt_x = tf.gather(target, (_dim0, _dim1 + idx * 2, cy0, cx0))
-            gt_y = tf.gather(target, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
+            # print(target)
+            gt_x = tf.zeros(batch_size)
+            gt_y = tf.zeros(batch_size)
+            pre_x = tf.zeros(batch_size)
+            pre_y = tf.zeros(batch_size)
+            for idx2, (i, j, k, l) in enumerate(zip(_dim0, _dim1 + idx * 2, cy0, cx0)):
+                gt_x[idx2] = target[i, j, k, l]
+                pre_x[idx2] = pred[i, j, k, l]
+                gt_y[idx2] = target[i, j+1, k, l]
+                pre_y[idx2] = pred[i, j+1, k, l]
+
+
+            # gt_x = tf.gather(target, (_dim0, _dim1 + idx * 2, cy0, cx0))
+            # gt_y = tf.gather(target, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
 
             # pre_x = pred[_dim0, _dim1 + idx * 2, cy0, cx0]
             # pre_y = pred[_dim0, _dim1 + idx * 2 + 1, cy0, cx0]
 
-            pre_x = tf.gather(pred, (_dim0, _dim1 + idx * 2, cy0, cx0))
-            pre_y = tf.gather(pred, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
+            # pre_x = tf.gather(pred, (_dim0, _dim1 + idx * 2, cy0, cx0))
+            # pre_y = tf.gather(pred, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
 
             # print(torch.max(target[_dim0,_dim1+idx*2,:,:]),torch.min(target[_dim0,_dim1+idx*2,:,:]))
             # print(gt_x,pre_x)                                       
