@@ -76,7 +76,7 @@ class Backbone(tf.keras.Model):
 
         f4 = self.conv4(f4)
 
-        print(f4.shape)
+        # print(f4.shape)
 
         return f4
 

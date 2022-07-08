@@ -316,7 +316,7 @@ class MovenetLoss():
         num_joints = output[0].shape[1]
         print("num_joints: ", num_joints)
 
-        # print("output: ", [x.shape for x in output])
+        print("output: ", [x.shape for x in output])
         # [64, 7, 48, 48] [64, 1, 48, 48] [64, 14, 48, 48] [64, 14, 48, 48]
         # print("target: ", [x.shape for x in target])#[64, 36, 48, 48]
         # print(weights.shape)# [14,]
