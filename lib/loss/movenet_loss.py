@@ -306,7 +306,7 @@ class MovenetLoss():
         return x, y
 
     def __call__(self, output, target, kps_mask):
-        print("output: ", output.shape)
+        # print("output: ", output.shape)
         batch_size = output[0].shape[0]
         num_joints = output[0].shape[1]
         # print("output: ", [x.shape for x in output])
