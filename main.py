@@ -14,3 +14,6 @@ x = tf.constant([[[[-0.7998, 1.2603],
 print(x)
 y = tf.reduce_max(x, axis=1)
 print(y)
+
+z = tf.zeros(128)
+print(z)

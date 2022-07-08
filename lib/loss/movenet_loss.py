@@ -206,7 +206,7 @@ class MovenetLoss():
         # print(target.shape, cx0.shape, cy0.shape)#torch.Size([64, 14, 48, 48]) torch.Size([64]) torch.Size([64])
 
         _dim0 = tf.range(0, batch_size)
-        _dim0 = tf.cast(_dim0, tf.int64).numpy()
+        _dim0 = tf.cast(_dim0, tf.int64)
 
         _dim1 = tf.zeros(batch_size)
         _dim1 = tf.cast(_dim1, tf.int64).numpy()
@@ -219,7 +219,7 @@ class MovenetLoss():
         # cv2.imwrite("t.jpg", target[0][2].cpu().numpy()*255)
         loss = 0
         for idx in range(num_joints):
-            gt_x = target[_dim0, _dim1 + idx * 2, cy0, cx0]
+            gt_x = target[:batch_size, _dim1 + idx * 2, cy0, cx0]
             gt_y = target[_dim0, _dim1 + idx * 2 + 1, cy0, cx0]
 
             pre_x = pred[_dim0, _dim1 + idx * 2, cy0, cx0]
