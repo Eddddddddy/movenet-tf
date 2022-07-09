@@ -80,16 +80,16 @@ def movenetDecode(data, kps_mask=None, mode='output', num_joints=17,
 
     if mode == 'output':
         print(data[0])
-        batch_size = data[0].size(0)
+        batch_size = data[0].shape[0]
 
-        heatmaps = data[0].detach().cpu().numpy()
+        heatmaps = data[0].numpy()
 
         heatmaps[heatmaps < hm_th] = 0
 
-        centers = data[1].detach().cpu().numpy()
+        centers = data[1].numpy()
 
-        regs = data[2].detach().cpu().numpy()
-        offsets = data[3].detach().cpu().numpy()
+        regs = data[2].numpy()
+        offsets = data[3].numpy()
 
         cx, cy = maxPoint(centers)
         # cx,cy = extract_keypoints(centers[0])
