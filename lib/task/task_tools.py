@@ -79,6 +79,7 @@ def movenetDecode(data, kps_mask=None, mode='output', num_joints=17,
     # kps_mask [n, 7]
 
     if mode == 'output':
+        print(data[0])
         batch_size = data[0].size(0)
 
         heatmaps = data[0].detach().cpu().numpy()
