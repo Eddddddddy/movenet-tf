@@ -176,9 +176,9 @@ def movenetDecode(data, kps_mask=None, mode='output', num_joints=17,
 
 
     elif mode == 'label':
-        kps_mask = kps_mask.detach().cpu().numpy()
+        kps_mask = kps_mask.numpy()
 
-        data = data.detach().cpu().numpy()
+        data = data.numpy()
         # print(data.shape)
         batch_size = data.shape[0]
 
