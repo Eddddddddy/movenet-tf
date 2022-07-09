@@ -352,7 +352,7 @@ class Task:
                       'r_loss: %.3f '
                       'o_loss: %.3f) - '
                       'acc: %.4f         ' % (epoch + 1, self.cfg['epochs'],
-                                              batch_idx, len(train_loader.dataset) / self.cfg['batch_size'],
+                                              batch_idx, train_loader.len / self.cfg['batch_size'],
                                               total_loss.item(),
                                               heatmap_loss.item(),
                                               bone_loss.item(),
