@@ -309,6 +309,7 @@ class Task:
                 total_loss = heatmap_loss + center_loss + regs_loss + offset_loss + bone_loss
 
             grads = tape.gradient(total_loss, self.model.variables)
+            print(grads)
             if self.cfg['clip_gradient']:
                 grads = [tf.clip_by_value(grad, -1., 1.) for grad in grads]
             self.optimizer.apply_gradients(grads_and_vars=zip(grads, self.model.variables))
