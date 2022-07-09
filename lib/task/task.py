@@ -353,12 +353,12 @@ class Task:
                       'o_loss: %.3f) - '
                       'acc: %.4f         ' % (epoch + 1, self.cfg['epochs'],
                                               batch_idx, train_len / self.cfg['batch_size'],
-                                              total_loss.item(),
-                                              heatmap_loss.item(),
-                                              bone_loss.item(),
-                                              center_loss.item(),
-                                              regs_loss.item(),
-                                              offset_loss.item(),
+                                              total_loss.,
+                                              heatmap_loss,
+                                              bone_loss,
+                                              center_loss,
+                                              regs_loss,
+                                              offset_loss,
                                               np.mean(right_count / total_count)),
                       end='', flush=True)
             # break
