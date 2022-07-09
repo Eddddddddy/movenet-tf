@@ -44,9 +44,9 @@ def getSchedu(schedu, optimizer):
     return scheduler
 
 
-def getOptimizer(optims, model, learning_rate, weight_decay):
+def getOptimizer(optims, model, learning_rate, weight_decay, clipvalue):
     if optims == 'Adam':
-        optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+        optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate, clipvalue=clipvalue)
     elif optims == 'SGD':
         optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=0.9)
     else:
