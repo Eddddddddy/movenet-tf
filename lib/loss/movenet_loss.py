@@ -445,6 +445,11 @@ class MovenetLoss():
         #                     cx0, cy0,regs,
         #                     kps_mask,batch_size, num_joints)
 
+        heatmap_loss = tf.cast(heatmap_loss, tf.float32)
+        center_loss = tf.cast(center_loss, tf.float32)
+        regs_loss = tf.cast(regs_loss, tf.float32)
+        offset_loss = tf.cast(offset_loss, tf.float32)
+
         return [heatmap_loss, bone_loss, center_loss, regs_loss, offset_loss]
 
 
