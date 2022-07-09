@@ -282,8 +282,8 @@ class MovenetLoss():
         loss = 0
         # print(gt_y,gt_x)
         for idx in range(num_joints):
-            gt_x = np.zeros(batch_size)
-            gt_y = np.zeros(batch_size)
+            gt_x = np.zeros(batch_size, dtype=np.int32)
+            gt_y = np.zeros(batch_size, dtype=np.int32)
             gt_offset_x = np.zeros(batch_size)
             gt_offset_y = np.zeros(batch_size)
             pre_offset_x = np.zeros(batch_size)
