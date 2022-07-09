@@ -16,7 +16,7 @@ _range_weight_y = _range_weight_x.T
 
 def getSchedu(schedu, optimizer):
     if 'default' in schedu:
-        print(schedu)
+        # print(schedu)
         factor = float(schedu.strip().split('-')[1])
         patience = int(schedu.strip().split('-')[2])
         scheduler = tf.keras.callbacks.ReduceLROnPlateau(optimizer,
@@ -79,7 +79,7 @@ def movenetDecode(data, kps_mask=None, mode='output', num_joints=17,
     # kps_mask [n, 7]
 
     if mode == 'output':
-        print(data[0])
+        # print(data[0])
         batch_size = data[0].shape[0]
 
         heatmaps = data[0].numpy()
