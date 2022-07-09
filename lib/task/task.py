@@ -353,7 +353,7 @@ class Task:
                       'o_loss: %.3f) - '
                       'acc: %.4f         ' % (epoch + 1, self.cfg['epochs'],
                                               batch_idx, train_len / self.cfg['batch_size'],
-                                              total_loss.,
+                                              total_loss,
                                               heatmap_loss,
                                               bone_loss,
                                               center_loss,
