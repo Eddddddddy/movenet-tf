@@ -315,8 +315,13 @@ class Task:
             #     grads = [tf.clip_by_value(grad, -self.cfg['clip_gradient'], self.cfg['clip_gradient']) for grad in grads]
             # grads = self.optimizer.compute_gradients(total_loss)
             # grads = [tf.clip_by_value(grad, -self.cfg['clip_gradient'], self.cfg['clip_gradient']) for grad in grads]
+            self.optimizer.apply_gradients(
+                (grad, var)
+                for (grad, var) in zip(grads, self.model.trainable_variables)
+                if grad is not None
+            )
 
-            self.optimizer.apply_gradients(grads_and_vars=zip(grads, self.model.variables))
+            # self.optimizer.apply_gradients(grads_and_vars=zip(grads, self.model.variables))
 
             # if self.cfg['clip_gradient']:
             #     clipGradient(self.optimizer, self.cfg['clip_gradient'])
