@@ -21,10 +21,10 @@ def main(cfg):
 
     dataset, datasetval = data_read2memory(cfg)
     data = Data(cfg, dataset, datasetval)
-    train_loader, val_loader = data.getTrainValDataloader()
+    train_loader, val_loader, train_len, val_len = data.getTrainValDataloader()
 
     run_task = Task(cfg, model)
-    run_task.train(train_loader, val_loader)
+    run_task.train(train_loader, val_loader, train_len, val_len)
 
     # print(model.trainable_variables)
     # print(model.summary())

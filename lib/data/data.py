@@ -140,7 +140,7 @@ class Data():
                                                  self.cfg,
                                                  self.dataset_h5,
                                                  self.datasetval_h5)
-        return train_loader, val_loader
+        return train_loader, val_loader, len(train_label_list), len(val_label_list)
 
     # def getTrainDataloader(self):
     #     data_names = getFileNames(self.cfg['train_path'])

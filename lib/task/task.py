@@ -43,11 +43,11 @@ class Task:
         # scheduler
         # self.scheduler = getSchedu(self.cfg['scheduler'], self.optimizer)
 
-    def train(self, train_loader, val_loader):
+    def train(self, train_loader, val_loader, train_len, val_len):
 
         for epoch in range(self.cfg['epochs']):
-            self.onTrainStep(train_loader, epoch)
-            self.onValidation(val_loader, epoch)
+            self.onTrainStep(train_loader, epoch, train_len, val_len)
+            self.onValidation(val_loader, epoch, train_len, val_len)
 
         self.onTrainEnd()
 
@@ -285,7 +285,7 @@ class Task:
         print('[Info] acc: {:.3f}% \n'.format(100. * acc))
 
     ################
-    def onTrainStep(self, train_loader, epoch):
+    def onTrainStep(self, train_loader, epoch, train_len, val_len):
 
         # self.model.train()
         correct = 0
@@ -352,7 +352,7 @@ class Task:
                       'r_loss: %.3f '
                       'o_loss: %.3f) - '
                       'acc: %.4f         ' % (epoch + 1, self.cfg['epochs'],
-                                              batch_idx, train_loader.len / self.cfg['batch_size'],
+                                              batch_idx, train_len / self.cfg['batch_size'],
                                               total_loss.item(),
                                               heatmap_loss.item(),
                                               bone_loss.item(),
