@@ -303,8 +303,8 @@ class MovenetLoss():
             gt_x[gt_x < 0] = 0
             gt_y[gt_y > 47] = 47
             gt_y[gt_y < 0] = 0
-            gt_x = tf.convert_to_tensor(gt_x, dtype=tf.float32)
-            gt_y = tf.convert_to_tensor(gt_y, dtype=tf.float32)
+            # gt_x = tf.convert_to_tensor(gt_x, dtype=tf.float32)
+            # gt_y = tf.convert_to_tensor(gt_y, dtype=tf.float32)
 
             for idx2, (i, j, k, l) in enumerate(zip(_dim0, _dim1 + idx * 2, gt_y, gt_x)):
                 gt_offset_x[idx2] = target[i, j, k, l]
