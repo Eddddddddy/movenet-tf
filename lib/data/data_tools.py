@@ -487,7 +487,7 @@ class TensorDataset:
         # cv2.imwrite(os.path.join("img.jpg"), img)
 
         img = img.astype(np.float32)
-        img = np.transpose(img, axes=[2, 0, 1])
+        # img = np.transpose(img, axes=[2, 0, 1])
 
         keypoints = item["keypoints"]
         center = item['center']
@@ -569,7 +569,10 @@ class TensorDataset:
         # v = tf.type_spec_from_value(labels)
         # q = tf.type_spec_from_value(kps_mask)
         # w = tf.type_spec_from_value(img_path)
-        img = tf.transpose(img, [1, 2, 0])
+
+        # img = tf.transpose(img, [1, 2, 0])
+
+        # img = tf.transpose(labels, [1, 2, 0])
         return img, labels, kps_mask, img_path
 
     # def __next__(self):

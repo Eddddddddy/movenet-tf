@@ -304,7 +304,8 @@ class Task:
             # kps_mask = kps_mask.to(self.device)
             with tf.GradientTape() as tape:
                 output = self.model(imgs)
-                print(labels)
+                # print(labels)
+                print(output.shape)
                 heatmap_loss, bone_loss, center_loss, regs_loss, offset_loss = self.loss_func(output, labels, kps_mask)
                 # heatmap_loss, bone_loss, center_loss, regs_loss, offset_loss = [0.1, 0.1, 0.1, 0.1, 0.1]
                 total_loss = heatmap_loss + center_loss + regs_loss + offset_loss + bone_loss
