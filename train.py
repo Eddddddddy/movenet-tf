@@ -19,8 +19,8 @@ def main(cfg):
     model = MoveNet(num_classes=cfg["num_classes"],
                     width_mult=cfg["width_mult"],
                     mode='train')
-    model.build(input_shape=(1, 192, 192, 3))
-    print(model.summary())
+    # model.build(input_shape=(1, 192, 192, 3))
+    # print(model.summary())
 
     dataset, datasetval = data_read2memory(cfg)
     data = Data(cfg, dataset, datasetval)
@@ -30,15 +30,11 @@ def main(cfg):
         optimizer=tf.keras.optimizers.Adam(learning_rate=cfg['learning_rate'], clipvalue=cfg['clip_gradient']),
         loss=MovenetLoss())
 
-    def generatorx():
+    def generator():
         for input, output1, output2, output3 in train_loader:
-            yield input
+            yield input, [output1, output2, output3]
 
-    def generatory():
-        for input, output1, output2, output3 in train_loader:
-            yield [output1, output2, output3]
-
-    model.fit(generatorx(), generatory(), epochs=cfg["epochs"], verbose=1)
+    model.fit(generator(), epochs=cfg["epochs"], verbose=1)
 
     # run_task = Task(cfg, model)
     # run_task.train(train_loader, val_loader, train_len, val_len)
