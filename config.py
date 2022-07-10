@@ -18,9 +18,9 @@ cfg = {
 
     ##### Train Setting
     'img_path': "../datasets/data/croped/imgs",
-    'train_label_path': '../datasets/data/croped/train2017.json',
+    'train_label_path': '../datasets/data/croped/val2017.json',
     'val_label_path': '../datasets/data/croped/val2017.json',
-    'dataset_h5': '../datasets/data/croped/H5_Dataset',
+    'dataset_h5': '../datasets/data/croped/H5_DatasetVal',
     'datasetval_h5': '../datasets/data/croped/H5_DatasetVal',
     'balance_data': False,
 

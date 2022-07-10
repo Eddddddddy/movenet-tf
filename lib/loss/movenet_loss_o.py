@@ -7,7 +7,7 @@ import sys
 import math
 import numpy as np
 import tensorflow as tf
-# from tensorflow.keras.losses import Loss
+from tensorflow.keras.losses import Loss
 
 import cv2
 
@@ -40,7 +40,7 @@ class JointBoneLoss():
         return loss
 
 
-class MovenetLoss():
+class MovenetLoss(Loss):
     def __init__(self, use_target_weight=False, target_weight=[1]):
         super(MovenetLoss, self).__init__()
         # self.mse = torch.nn.MSELoss(size_average=True)
@@ -373,23 +373,38 @@ class MovenetLoss():
 
         return x, y
 
-    def __call__(self, output, target, kps_mask):
+    def call(self, y_true, y_pred): # y_true: target and kps_mask, y_pred: output
         # print("output: ", output.shape)
-        output[0] = tf.transpose(output[0], [0, 3, 1, 2])
-        output[1] = tf.transpose(output[1], [0, 3, 1, 2])
-        output[2] = tf.transpose(output[2], [0, 3, 1, 2])
-        output[3] = tf.transpose(output[3], [0, 3, 1, 2])
-        batch_size = output[0].shape[0]
+        # 更改通道顺序    (batch, h, w, num_joints)
+        # y_pred[0] = tf.transpose(y_pred[0], [0, 3, 1, 2])
+        # y_pred[1] = tf.transpose(y_pred[1], [0, 3, 1, 2])
+        # y_pred[2] = tf.transpose(y_pred[2], [0, 3, 1, 2])
+        # y_pred[3] = tf.transpose(y_pred[3], [0, 3, 1, 2])
+
+        batch_size = y_pred[0].shape[0]
         # print("batch_size: ", batch_size)
-        num_joints = output[0].shape[1]
+        num_joints = y_pred[0].shape[3]
         # print("num_joints: ", num_joints)
 
         # print("output: ", [x.shape for x in output])
         # [64, 7, 48, 48] [64, 1, 48, 48] [64, 14, 48, 48] [64, 14, 48, 48]
         # print("target: ", [x.shape for x in target])#[64, 36, 48, 48]
         # print(weights.shape)# [14,]
-        print(target)
-        heatmaps = target[:, :17, :, :]
+        print(y_true)
+        # target :
+        # {"img_name": "000000425226_0.jpg",
+        #  "keypoints": [0.16815476190476192, -0.08333333333333333, 0, 0.16815476190476192, -0.08333333333333333, 0,
+        #                0.16815476190476192, -0.08333333333333333, 0, 0.16815476190476192, -0.08333333333333333, 0,
+        #                0.16815476190476192, -0.08333333333333333, 0, 0.3794642857142857, 0.37648809523809523, 1,
+        #                0.43154761904761907, 0.39285714285714285, 2, 0.4523809523809524, 0.5089285714285714, 2,
+        #                0.5208333333333334, 0.38839285714285715, 2, 0.5148809523809523, 0.5505952380952381, 2,
+        #                0.6235119047619048, 0.26339285714285715, 2, 0.30505952380952384, 0.5892857142857143, 2,
+        #                0.35119047619047616, 0.6130952380952381, 2, 0.16815476190476192, -0.08333333333333333, 0,
+        #                0.5416666666666666, 0.6145833333333334, 2, 0.16815476190476192, -0.08333333333333333, 0,
+        #                0.40922619047619047, 0.7366071428571429, 2], "center": [0.5, 0.5],
+        #  "bbox": [0.2767857142857143, 0.22321428571428573, 0.7232142857142857, 0.7767857142857143], "other_centers": [],
+        #  "other_keypoints": [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]}
+        heatmaps = y_true[0][:, :17, :, :]
         centers = target[:, 17:18, :, :]
         regs = target[:, 18:52, :, :]
         offsets = target[:, 52:, :, :]
