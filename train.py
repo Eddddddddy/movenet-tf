@@ -42,5 +42,5 @@ def main(cfg):
     #
     # print(model.variables)
 
-    if __name__ == '__main__':
-        main(cfg)
+if __name__ == '__main__':
+    main(cfg)
