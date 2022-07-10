@@ -302,6 +302,7 @@ class MovenetLoss():
 
             gt_x = tf.clip_by_value(gt_x, 0, 47)
             gt_y = tf.clip_by_value(gt_y, 0, 47)
+
             # gt_x = tf.convert_to_tensor(gt_x, dtype=tf.float32)
             # gt_y = tf.convert_to_tensor(gt_y, dtype=tf.float32)
 

@@ -411,6 +411,7 @@ class MovenetLoss(Loss):
 
         batch_size = y_pred[0].shape[0]
         # print("batch_size: ", batch_size)
+        print(y_pred)
         num_joints = y_pred[0].shape[3]
         # print("num_joints: ", num_joints)
 
