@@ -66,8 +66,8 @@ class MovenetLoss(Loss):
         # print("target ", target.shape)
         # print("kps_mask ", kps_mask.shape)
 
-        pre = tf.cast(pre, tf.float64)
-        target = tf.cast(target, tf.float64)
+        # pre = tf.cast(pre, tf.float64)
+        # target = tf.cast(target, tf.float64)
 
         c = tf.abs(pre - target)
         a = tf.reduce_sum(c * kps_mask)
@@ -125,7 +125,7 @@ class MovenetLoss(Loss):
 
         loss = loss * weight_mask  # *gamma
 
-        loss = tf.reduce_sum(loss) / target.shape[0] / target.shape[1]
+        loss = tf.reduce_sum(loss) / target.shape[0] / target.shape[3]
 
         # bg_loss = self.bgLoss(pre, target)
         return loss
@@ -159,8 +159,8 @@ class MovenetLoss(Loss):
 
         loss = 0
         for bone_id in _bone_idx:
-            bone_pre = pred[:, bone_id[0], :, :] - pred[:, bone_id[1], :, :]
-            bone_gt = target[:, bone_id[0], :, :] - target[:, bone_id[1], :, :]
+            bone_pre = pred[:, :, :, bone_id[0]] - pred[:, :, :, bone_id[1]]
+            bone_gt = target[:, :, :, bone_id[0]] - target[:, :, :, bone_id[1]]
 
             f = _Frobenius(bone_pre, bone_gt)
             loss += f
@@ -234,20 +234,26 @@ class MovenetLoss(Loss):
         for idx in range(num_joints):
             # gt_x = target[_dim0, _dim1 + idx * 2, cy0, cx0]
             # print(target)
-            gt_x = np.zeros(batch_size)
-            gt_y = np.zeros(batch_size)
-            pre_x = np.zeros(batch_size)
-            pre_y = np.zeros(batch_size)
-            for idx2, (i, j, k, l) in enumerate(zip(_dim0, _dim1 + idx * 2, cy0, cx0)):
-                gt_x[idx2] = target[i, j, k, l]
-                pre_x[idx2] = pred[i, j, k, l]
-                gt_y[idx2] = target[i, j + 1, k, l]
-                pre_y[idx2] = pred[i, j + 1, k, l]
 
-            gt_x = tf.convert_to_tensor(gt_x, dtype=tf.float32)
-            gt_y = tf.convert_to_tensor(gt_y, dtype=tf.float32)
-            pre_x = tf.convert_to_tensor(pre_x, dtype=tf.float32)
-            pre_y = tf.convert_to_tensor(pre_y, dtype=tf.float32)
+            gt_x = [target[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2)]
+            gt_y = [target[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2 + 1)]
+            pre_x = [pred[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2)]
+            pre_y = [pred[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2 + 1)]
+
+            # gt_x = np.zeros(batch_size)
+            # gt_y = np.zeros(batch_size)
+            # pre_x = np.zeros(batch_size)
+            # pre_y = np.zeros(batch_size)
+            # for idx2, (i, j, k, l) in enumerate(zip(_dim0, _dim1 + idx * 2, cy0, cx0)):
+            #     gt_x[idx2] = target[i, j, k, l]
+            #     pre_x[idx2] = pred[i, j, k, l]
+            #     gt_y[idx2] = target[i, j + 1, k, l]
+            #     pre_y[idx2] = pred[i, j + 1, k, l]
+            #
+            # gt_x = tf.convert_to_tensor(gt_x, dtype=tf.float32)
+            # gt_y = tf.convert_to_tensor(gt_y, dtype=tf.float32)
+            # pre_x = tf.convert_to_tensor(pre_x, dtype=tf.float32)
+            # pre_y = tf.convert_to_tensor(pre_y, dtype=tf.float32)
 
             # gt_x = tf.gather(target, (_dim0, _dim1 + idx * 2, cy0, cx0))
             # gt_y = tf.gather(target, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
@@ -283,15 +289,18 @@ class MovenetLoss(Loss):
         loss = 0
         # print(gt_y,gt_x)
         for idx in range(num_joints):
-            gt_x = np.zeros(batch_size, dtype=np.int32)
-            gt_y = np.zeros(batch_size, dtype=np.int32)
-            gt_offset_x = np.zeros(batch_size)
-            gt_offset_y = np.zeros(batch_size)
-            pre_offset_x = np.zeros(batch_size)
-            pre_offset_y = np.zeros(batch_size)
-            for idx2, (i, j, k, l) in enumerate(zip(_dim0, _dim1 + idx * 2, cy0, cx0)):
-                gt_x[idx2] = regs[i, j, k, l]
-                gt_y[idx2] = regs[i, j + 1, k, l]
+            gt_x = [regs[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2)] + cx0
+            gt_y = [regs[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2 + 1)] + cy0
+
+            # gt_x = np.zeros(batch_size, dtype=np.int32)
+            # gt_y = np.zeros(batch_size, dtype=np.int32)
+            # gt_offset_x = np.zeros(batch_size)
+            # gt_offset_y = np.zeros(batch_size)
+            # pre_offset_x = np.zeros(batch_size)
+            # pre_offset_y = np.zeros(batch_size)
+            # for idx2, (i, j, k, l) in enumerate(zip(_dim0, _dim1 + idx * 2, cy0, cx0)):
+            #     gt_x[idx2] = regs[i, j, k, l]
+            #     gt_y[idx2] = regs[i, j + 1, k, l]
 
             # # gt_x = regs[_dim0, _dim1 + idx * 2, cy0, cx0].long() + cx0
             # gt_x = tf.gather(regs, (_dim0, _dim1 + idx * 2, cy0, cx0))
@@ -307,16 +316,22 @@ class MovenetLoss(Loss):
             # gt_x = tf.convert_to_tensor(gt_x, dtype=tf.float32)
             # gt_y = tf.convert_to_tensor(gt_y, dtype=tf.float32)
 
-            for idx2, (i, j, k, l) in enumerate(zip(_dim0, _dim1 + idx * 2, gt_y, gt_x)):
-                gt_offset_x[idx2] = target[i, j, k, l]
-                gt_offset_y[idx2] = target[i, j + 1, k, l]
-                pre_offset_x[idx2] = pred[i, j, k, l]
-                pre_offset_y[idx2] = pred[i, j + 1, k, l]
+            gt_offset_x = [target[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2)]
+            gt_offset_y = [target[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2 + 1)]
+            pre_offset_x = [pred[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2)]
+            pre_offset_y = [pred[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2 + 1)]
 
-            gt_offset_x = tf.convert_to_tensor(gt_offset_x, dtype=tf.float32)
-            gt_offset_y = tf.convert_to_tensor(gt_offset_y, dtype=tf.float32)
-            pre_offset_x = tf.convert_to_tensor(pre_offset_x, dtype=tf.float32)
-            pre_offset_y = tf.convert_to_tensor(pre_offset_y, dtype=tf.float32)
+
+            # for idx2, (i, j, k, l) in enumerate(zip(_dim0, _dim1 + idx * 2, gt_y, gt_x)):
+            #     gt_offset_x[idx2] = target[i, j, k, l]
+            #     gt_offset_y[idx2] = target[i, j + 1, k, l]
+            #     pre_offset_x[idx2] = pred[i, j, k, l]
+            #     pre_offset_y[idx2] = pred[i, j + 1, k, l]
+            #
+            # gt_offset_x = tf.convert_to_tensor(gt_offset_x, dtype=tf.float32)
+            # gt_offset_y = tf.convert_to_tensor(gt_offset_y, dtype=tf.float32)
+            # pre_offset_x = tf.convert_to_tensor(pre_offset_x, dtype=tf.float32)
+            # pre_offset_y = tf.convert_to_tensor(pre_offset_y, dtype=tf.float32)
 
             # # gt_offset_x = target[_dim0, _dim1 + idx * 2, gt_y, gt_x]
             # # gt_offset_y = target[_dim0, _dim1 + idx * 2 + 1, gt_y, gt_x]
@@ -352,7 +367,7 @@ class MovenetLoss(Loss):
             heatmap = heatmap * self.center_weight[:heatmap.shape[0], ...]
             # 加权取最靠近中间的
 
-        n, c, h, w = heatmap.shape
+        n, h, w, c = heatmap.shape
         # print(heatmap)
         heatmap = tf.reshape(heatmap, (n, -1))
         # print(heatmap[0])
@@ -373,7 +388,7 @@ class MovenetLoss(Loss):
 
         return x, y
 
-    def call(self, y_true, y_pred): # y_true: target and kps_mask, y_pred: output
+    def call(self, y_true, y_pred):  # y_true: target and kps_mask, y_pred: output
         # print("output: ", output.shape)
         # 更改通道顺序    (batch, h, w, num_joints)
         # y_pred[0] = tf.transpose(y_pred[0], [0, 3, 1, 2])
@@ -391,7 +406,7 @@ class MovenetLoss(Loss):
         # print("target: ", [x.shape for x in target])#[64, 36, 48, 48]
         # print(weights.shape)# [14,]
 
-        print(y_true)
+        # print(y_true)
 
         # target :
         # {"img_name": "000000425226_0.jpg",
@@ -469,22 +484,22 @@ class MovenetLoss(Loss):
         #                      [[0.20232558139534884, 0.6456876456876457]],
         #                      [[0.2302325581395349, 0.696969696969697]]]}
 
-        heatmaps = y_true[0][:, :17, :, :]
-        centers = target[:, 17:18, :, :]
-        regs = target[:, 18:52, :, :]
-        offsets = target[:, 52:, :, :]
+        heatmaps = y_true[0][:, :, :, :17]
+        centers = y_true[0][:, :, :, 17:18]
+        regs = y_true[0][:, :, :, 18:52]
+        offsets = y_true[0][:, :, :, 52:]
 
-        heatmap_loss = self.heatmapLoss(output[0], heatmaps, batch_size)
+        heatmap_loss = self.heatmapLoss(y_pred[0], heatmaps, batch_size)
 
         # bg_loss = self.bgLoss(output[0], heatmaps)
         # bone_loss = self.boneloss(output[0], heatmaps)
-        bone_loss = self.boneLoss(output[0], heatmaps)
+        bone_loss = self.boneLoss(y_pred[0], heatmaps)
         # print(heatmap_loss)
-        center_loss = self.centerLoss(output[1], centers, batch_size)
+        center_loss = self.centerLoss(y_pred[1], centers, batch_size)
 
         if not self.make_center_w:
-            self.center_weight = tf.reshape(self.center_weight, (1, 1, 48, 48))
-            self.center_weight = tf.tile(self.center_weight, (output[1].shape[0], output[1].shape[1], 1, 1))
+            self.center_weight = tf.reshape(self.center_weight, (1, 48, 48, 1))
+            self.center_weight = tf.tile(self.center_weight, (y_pred[1].shape[0], 1, 1, y_pred[1].shape[3]))
             # print(self.center_weight.shape)
             # b
             # self.center_weight = self.center_weight
@@ -511,10 +526,10 @@ class MovenetLoss(Loss):
         # cv2.imwrite("_centers.jpg", centers[0][0].cpu().numpy()*255)
         # b
 
-        regs_loss = self.regsLoss(output[2], regs, cx0, cy0, kps_mask, batch_size, num_joints)
-        offset_loss = self.offsetLoss(output[3], offsets,
+        regs_loss = self.regsLoss(y_pred[2], regs, cx0, cy0, y_true[1], batch_size, num_joints)
+        offset_loss = self.offsetLoss(y_pred[3], offsets,
                                       cx0, cy0, regs,
-                                      kps_mask, batch_size, num_joints)
+                                      y_true[1], batch_size, num_joints)
 
         # total_loss = heatmap_loss+center_loss+0.1*regs_loss+offset_loss
         # print(heatmap_loss,center_loss,regs_loss,offset_loss)
@@ -527,12 +542,14 @@ class MovenetLoss(Loss):
         #                     cx0, cy0,regs,
         #                     kps_mask,batch_size, num_joints)
 
-        heatmap_loss = tf.cast(heatmap_loss, tf.float32)
-        center_loss = tf.cast(center_loss, tf.float32)
-        regs_loss = tf.cast(regs_loss, tf.float32)
-        offset_loss = tf.cast(offset_loss, tf.float32)
+        # heatmap_loss = tf.cast(heatmap_loss, tf.float32)
+        # center_loss = tf.cast(center_loss, tf.float32)
+        # regs_loss = tf.cast(regs_loss, tf.float32)
+        # offset_loss = tf.cast(offset_loss, tf.float32)
 
-        return [heatmap_loss, bone_loss, center_loss, regs_loss, offset_loss]
+        all_loss = tf.reduce_sum(heatmap_loss + center_loss + regs_loss + offset_loss)
+
+        return all_loss
 
 
 movenetLoss = MovenetLoss(use_target_weight=False)

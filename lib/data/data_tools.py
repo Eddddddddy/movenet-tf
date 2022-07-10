@@ -423,7 +423,7 @@ def TensorDataset_tf(data_labels, img_dir, img_size, dataset_h5, data_aug):
 ######## dataloader
 class TensorDataset:
 
-    def __init__(self, data_labels, img_dir, img_size, dataset_h5, data_aug=None):
+    def __init__(self, data_labels, img_dir, img_size, dataset_h5, data_aug=None, ot=0):
         # if dataset_h5 == 1:
         #     self.dataset_h5 = h5py.File('./data/croped/H5_Dataset', 'r', driver='core', backing_store=False)
         # else:
@@ -436,6 +436,7 @@ class TensorDataset:
         self.len = len(self.data_labels)
         self.index = 0
         self.interp_methods = [2, 3, 0, 1]
+        self.ot = ot
 
     def __len__(self):
         return self.len
@@ -572,8 +573,14 @@ class TensorDataset:
 
         # img = tf.transpose(img, [1, 2, 0])
 
-        # img = tf.transpose(labels, [1, 2, 0])
-        return img, labels, kps_mask, img_path
+        img = np.transpose(labels, [1, 2, 0])
+
+        if self.ot == 1:
+            return img
+        elif self.ot == 2:
+            return [labels, kps_mask, img_path]
+        else:
+            return img, labels, kps_mask, img_path
 
     # def __next__(self):
     #     if self.index > self.len:
@@ -590,6 +597,14 @@ def getDataLoader(mode, input_data, cfg, dataset_h5, datasetval_h5):
             tf.TensorSpec(shape=(17,), dtype=tf.float64),
             tf.TensorSpec(shape=(), dtype=tf.string)
         )
+        ot_x = (
+            tf.TensorSpec(shape=(192, 192, 3), dtype=tf.float32)
+        )
+        ot_y = (
+            tf.TensorSpec(shape=(86, 48, 48), dtype=tf.float32),
+            tf.TensorSpec(shape=(17,), dtype=tf.float64),
+            tf.TensorSpec(shape=(), dtype=tf.string)
+        )
         train_loader = tf.data.Dataset.from_generator(TensorDataset(input_data[0],
                                                                     cfg['img_path'],
                                                                     cfg['img_size'],
@@ -597,6 +612,24 @@ def getDataLoader(mode, input_data, cfg, dataset_h5, datasetval_h5):
                                                                     DataAug(cfg['img_size'])
                                                                     ),
                                                       output_signature=ot).batch(cfg['batch_size'])
+
+        train_loader_x = tf.data.Dataset.from_generator(TensorDataset(input_data[0],
+                                                                      cfg['img_path'],
+                                                                      cfg['img_size'],
+                                                                      dataset_h5,
+                                                                      DataAug(cfg['img_size']),
+                                                                      1
+                                                                      ),
+                                                        output_signature=ot_x).batch(cfg['batch_size'])
+
+        train_loader_y = tf.data.Dataset.from_generator(TensorDataset(input_data[0],
+                                                                      cfg['img_path'],
+                                                                      cfg['img_size'],
+                                                                      dataset_h5,
+                                                                      DataAug(cfg['img_size']),
+                                                                      2
+                                                                      ),
+                                                        output_signature=ot_y).batch(cfg['batch_size'])
 
         val_loader = tf.data.Dataset.from_generator(TensorDataset(input_data[1],
                                                                   cfg['img_path'],
@@ -606,7 +639,7 @@ def getDataLoader(mode, input_data, cfg, dataset_h5, datasetval_h5):
                                                                   ),
                                                     output_signature=ot).batch(cfg['batch_size'])
 
-        return train_loader, val_loader
+        return train_loader, val_loader, train_loader_x, train_loader_y
 
     # elif mode == "val":
     #
