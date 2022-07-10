@@ -77,19 +77,15 @@ def movenetDecode(data, kps_mask=None, mode='output', num_joints=17,
                   img_size=192, hm_th=0.1):
     ##data [64, 7, 48, 48] [64, 1, 48, 48] [64, 14, 48, 48] [64, 14, 48, 48]
     # kps_mask [n, 7]
-    print(len(data))
-    # print(data[1].shape)
 
-    # print(data)
-    # print(data[2])
-
-    data[0] = tf.transpose(data[0], [0, 3, 1, 2])
-    data[1] = tf.transpose(data[1], [0, 3, 1, 2])
-    data[2] = tf.transpose(data[2], [0, 3, 1, 2])
-    data[3] = tf.transpose(data[3], [0, 3, 1, 2])
 
     if mode == 'output':
         # print(data[0])
+        data[0] = tf.transpose(data[0], [0, 3, 1, 2])
+        data[1] = tf.transpose(data[1], [0, 3, 1, 2])
+        data[2] = tf.transpose(data[2], [0, 3, 1, 2])
+        data[3] = tf.transpose(data[3], [0, 3, 1, 2])
+
         batch_size = data[0].shape[0]
 
         heatmaps = data[0].numpy()
@@ -186,6 +182,9 @@ def movenetDecode(data, kps_mask=None, mode='output', num_joints=17,
 
 
     elif mode == 'label':
+        data[0] = tf.transpose(data[0], [0, 3, 1, 2])
+        data[1] = tf.transpose(data[1], [0, 3, 1, 2])
+
         kps_mask = kps_mask.numpy()
 
         data = data.numpy()
