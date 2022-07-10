@@ -30,11 +30,15 @@ def main(cfg):
         optimizer=tf.keras.optimizers.Adam(learning_rate=cfg['learning_rate'], clipvalue=cfg['clip_gradient']),
         loss=MovenetLoss())
 
-    def generator():
+    def generatorx():
         for input, output1, output2, output3 in train_loader:
-            yield input, [output1, output2, output3]
+            yield input
 
-    model.fit_generator(generator(), epochs=cfg["epochs"], verbose=1)
+    def generatory():
+        for input, output1, output2, output3 in train_loader:
+            yield [output1, output2, output3]
+
+    model.fit(generatorx(), generatory(), epochs=cfg["epochs"], verbose=1)
 
     # run_task = Task(cfg, model)
     # run_task.train(train_loader, val_loader, train_len, val_len)
@@ -45,6 +49,7 @@ def main(cfg):
     # output = model(tf.ones((1, 3, 192, 192)))
     #
     # print(model.variables)
+
 
 if __name__ == '__main__':
     main(cfg)
