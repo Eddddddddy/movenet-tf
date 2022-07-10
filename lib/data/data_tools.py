@@ -594,7 +594,7 @@ def getDataLoader(mode, input_data, cfg, dataset_h5, datasetval_h5):
         ot = (
             tf.TensorSpec(shape=(192, 192, 3), dtype=tf.float32),
             tf.TensorSpec(shape=(48, 48, 86), dtype=tf.float32),
-            tf.TensorSpec(shape=(17,), dtype=tf.float64),
+            tf.TensorSpec(shape=(17,), dtype=tf.float32),
             tf.TensorSpec(shape=(), dtype=tf.string)
         )
         ot_x = (
@@ -602,7 +602,7 @@ def getDataLoader(mode, input_data, cfg, dataset_h5, datasetval_h5):
         )
         ot_y = (
             tf.TensorSpec(shape=(48, 48, 86), dtype=tf.float32),
-            tf.TensorSpec(shape=(17,), dtype=tf.float64),
+            tf.TensorSpec(shape=(17,), dtype=tf.float32),
             tf.TensorSpec(shape=(), dtype=tf.string)
         )
         train_loader = tf.data.Dataset.from_generator(TensorDataset(input_data[0],

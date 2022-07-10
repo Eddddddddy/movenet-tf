@@ -69,9 +69,9 @@ class MovenetLoss():
         # pre = tf.cast(pre, tf.float64)
         # target = tf.cast(target, tf.float64)
 
-        c = tf.abs(pre - target, dtype=tf.float32)
-        a = tf.reduce_sum(c * kps_mask, dtype=tf.float32)
-        b = (tf.reduce_sum(kps_mask, dtype=tf.float32) + 1e-4)
+        c = tf.abs(pre - target)
+        a = tf.reduce_sum(c * kps_mask)
+        b = (tf.reduce_sum(kps_mask) + 1e-4)
         # return tf.reduce_sum(tf.abs(pre - target) * kps_mask) / (kps_mask.sum() + 1e-4)
         return a / b
 
