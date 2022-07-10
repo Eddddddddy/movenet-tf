@@ -15,7 +15,7 @@ def main(cfg):
     # model.build(input_shape=(1, 48, 48, 24))
     # # print(model.trainable_variables)
     # print(model.summary())
-
+    print("===========================")
     model = MoveNet(num_classes=cfg["num_classes"],
                     width_mult=cfg["width_mult"],
                     mode='train')
