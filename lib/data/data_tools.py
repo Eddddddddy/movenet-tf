@@ -573,7 +573,7 @@ class TensorDataset:
 
         # img = tf.transpose(img, [1, 2, 0])
 
-        img = np.transpose(labels, [1, 2, 0])
+        labels = np.transpose(labels, [1, 2, 0])
 
         if self.ot == 1:
             return img
@@ -593,7 +593,7 @@ def getDataLoader(mode, input_data, cfg, dataset_h5, datasetval_h5):
     if mode == "trainval":
         ot = (
             tf.TensorSpec(shape=(192, 192, 3), dtype=tf.float32),
-            tf.TensorSpec(shape=(86, 48, 48), dtype=tf.float32),
+            tf.TensorSpec(shape=(48, 48, 86), dtype=tf.float32),
             tf.TensorSpec(shape=(17,), dtype=tf.float64),
             tf.TensorSpec(shape=(), dtype=tf.string)
         )
@@ -601,7 +601,7 @@ def getDataLoader(mode, input_data, cfg, dataset_h5, datasetval_h5):
             tf.TensorSpec(shape=(192, 192, 3), dtype=tf.float32)
         )
         ot_y = (
-            tf.TensorSpec(shape=(86, 48, 48), dtype=tf.float32),
+            tf.TensorSpec(shape=(48, 48, 86), dtype=tf.float32),
             tf.TensorSpec(shape=(17,), dtype=tf.float64),
             tf.TensorSpec(shape=(), dtype=tf.string)
         )
