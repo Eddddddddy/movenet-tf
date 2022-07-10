@@ -189,7 +189,7 @@ def movenetDecode(data, kps_mask=None, mode='output', num_joints=17,
         kps_mask = kps_mask.numpy()
 
         data = data.numpy()
-        data = np.transpose[data, [0, 3, 1, 2]]
+        data = np.transpose(data, [0, 3, 1, 2])
         # print(data.shape)
         batch_size = data.shape[0]
 
