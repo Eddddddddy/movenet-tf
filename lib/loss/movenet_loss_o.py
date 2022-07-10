@@ -235,10 +235,14 @@ class MovenetLoss(Loss):
             # gt_x = target[_dim0, _dim1 + idx * 2, cy0, cx0]
             # print(target)
 
-            gt_x = [target[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2)]
-            gt_y = [target[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2 + 1)]
-            pre_x = [pred[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2)]
-            pre_y = [pred[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2 + 1)]
+            gt_x = tf.convert_to_tensor([target[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2)],
+                                        dtype=tf.float32)
+            gt_y = tf.convert_to_tensor(
+                [target[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2 + 1)], dtype=tf.float32)
+            pre_x = tf.convert_to_tensor([pred[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2)],
+                                         dtype=tf.float32)
+            pre_y = tf.convert_to_tensor([pred[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2 + 1)],
+                                         dtype=tf.float32)
 
             # gt_x = np.zeros(batch_size)
             # gt_y = np.zeros(batch_size)
@@ -289,8 +293,10 @@ class MovenetLoss(Loss):
         loss = 0
         # print(gt_y,gt_x)
         for idx in range(num_joints):
-            gt_x = [regs[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2)] + cx0
-            gt_y = [regs[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2 + 1)] + cy0
+            gt_x = tf.convert_to_tensor(
+                [regs[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2)] + cx0, dtype=tf.int32)
+            gt_y = tf.convert_to_tensor(
+                [regs[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2 + 1)] + cy0, dtype=tf.int32)
 
             # gt_x = np.zeros(batch_size, dtype=np.int32)
             # gt_y = np.zeros(batch_size, dtype=np.int32)
@@ -309,18 +315,25 @@ class MovenetLoss(Loss):
             # gt_y = tf.gather(regs, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
             # gt_y = tf.cast(gt_y, tf.int32) + cy0
 
-            gt_x[gt_x > 47] = 47
-            gt_x[gt_x < 0] = 0
-            gt_y[gt_y > 47] = 47
-            gt_y[gt_y < 0] = 0
+            # gt_x[gt_x > 47] = 47
+            # gt_x[gt_x < 0] = 0
+            # gt_y[gt_y > 47] = 47
+            # gt_y[gt_y < 0] = 0
+
+            gt_x = tf.clip_by_value(gt_x, 0, 47)
+            gt_y = tf.clip_by_value(gt_y, 0, 47)
+
             # gt_x = tf.convert_to_tensor(gt_x, dtype=tf.float32)
             # gt_y = tf.convert_to_tensor(gt_y, dtype=tf.float32)
 
-            gt_offset_x = [target[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2)]
-            gt_offset_y = [target[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2 + 1)]
-            pre_offset_x = [pred[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2)]
-            pre_offset_y = [pred[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2 + 1)]
-
+            gt_offset_x = tf.convert_to_tensor(
+                [target[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2)], dtype=tf.float32)
+            gt_offset_y = tf.convert_to_tensor(
+                [target[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2 + 1)], dtype=tf.float32)
+            pre_offset_x = tf.convert_to_tensor(
+                [pred[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2)], dtype=tf.float32)
+            pre_offset_y = tf.convert_to_tensor(
+                [pred[i, j, k, l] for i, j, k, l in zip(_dim0, gt_y, gt_x, _dim1 + idx * 2 + 1)], dtype=tf.float32)
 
             # for idx2, (i, j, k, l) in enumerate(zip(_dim0, _dim1 + idx * 2, gt_y, gt_x)):
             #     gt_offset_x[idx2] = target[i, j, k, l]
