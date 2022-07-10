@@ -24,14 +24,14 @@ cfg = {
     'datasetval_h5': '../datasets/data/croped/H5_DatasetVal',
     'balance_data': False,
 
-    'log_interval': 10,
+    'log_interval': 1,
     'save_best_only': True,
 
     'pin_memory': True,
 
     ##### Train Hyperparameters
     'learning_rate': 0.001,  # 1.25e-4
-    'batch_size': 2,  # 64
+    'batch_size': 12,  # 64
     'epochs': 120,
     'optimizer': 'Adam',  # Adam  SGD
     # 'scheduler': 'MultiStepLR-70,100-0.1',  # default  SGDR-5-2  CVPR   step-4-0.8 MultiStepLR
