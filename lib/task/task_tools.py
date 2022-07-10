@@ -77,6 +77,7 @@ def movenetDecode(data, kps_mask=None, mode='output', num_joints=17,
                   img_size=192, hm_th=0.1):
     ##data [64, 7, 48, 48] [64, 1, 48, 48] [64, 14, 48, 48] [64, 14, 48, 48]
     # kps_mask [n, 7]
+    data = tf.transpose(data, [0, 3, 1, 2])
 
     if mode == 'output':
         # print(data[0])
