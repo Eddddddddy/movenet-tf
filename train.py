@@ -34,7 +34,7 @@ def main(cfg):
         for input, output1, output2, output3 in train_loader:
             yield input, [output1, output2, output3]
 
-    model.fit(generator(), epochs=cfg["epochs"], verbose=1)
+    model.fit(generator(), epochs=cfg["epochs"], verbose=2)
 
     # run_task = Task(cfg, model)
     # run_task.train(train_loader, val_loader, train_len, val_len)
