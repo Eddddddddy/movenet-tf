@@ -388,7 +388,7 @@ class MovenetLoss():
         # [64, 7, 48, 48] [64, 1, 48, 48] [64, 14, 48, 48] [64, 14, 48, 48]
         # print("target: ", [x.shape for x in target])#[64, 36, 48, 48]
         # print(weights.shape)# [14,]
-        print(target)
+        # print(target)
         heatmaps = target[:, :17, :, :]
         centers = target[:, 17:18, :, :]
         regs = target[:, 18:52, :, :]
