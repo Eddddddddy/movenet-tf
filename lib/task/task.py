@@ -294,8 +294,10 @@ class Task:
         right_count = np.array([0] * self.cfg['num_classes'], dtype=np.int64)
         total_count = 0
 
-        for batch_idx, (imgs, labels, kps_mask, img_names) in enumerate(train_loader):
 
+
+        for batch_idx, (imgs, labels, kps_mask, img_names) in enumerate(train_loader):
+            tf.profiler.experimental.start('logdir')
             # if '000000242610_0' not in img_names[0]:
             #     continue
 
@@ -368,6 +370,7 @@ class Task:
                                               np.mean(right_count / total_count)),
                       end='', flush=True)
             # break
+            tf.profiler.experimental.stop()
         print()
 
     def onTrainEnd(self):
