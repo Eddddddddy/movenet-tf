@@ -547,7 +547,7 @@ class MovenetLoss(Loss):
         # regs_loss = tf.cast(regs_loss, tf.float32)
         # offset_loss = tf.cast(offset_loss, tf.float32)
 
-        all_loss = tf.reduce_sum(heatmap_loss + center_loss + regs_loss + offset_loss)
+        all_loss = tf.reduce_sum(heatmap_loss + center_loss + regs_loss + offset_loss + bone_loss)
 
         return all_loss
 
