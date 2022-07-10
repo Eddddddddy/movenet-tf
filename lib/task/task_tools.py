@@ -80,8 +80,8 @@ def movenetDecode(data, kps_mask=None, mode='output', num_joints=17,
     print(data[0].shape)
     print(data[1].shape)
 
-    print(data[2].shape)
-    print(data[3].shape)
+    print(data)
+    print(data[2])
 
     data[0] = tf.transpose(data[0], [0, 3, 1, 2])
     data[1] = tf.transpose(data[1], [0, 3, 1, 2])
