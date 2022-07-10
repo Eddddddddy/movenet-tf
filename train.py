@@ -22,7 +22,7 @@ def main(cfg):
     # model.build(input_shape=(1, 192, 192, 3))
     # print(model.summary())
 
-    dataset, datasetval = data_read2memory(cfg)
+    # dataset, datasetval = data_read2memory(cfg)
     data = Data(cfg, dataset, datasetval)
     train_loader, val_loader, train_loader_x, train_loader_y, train_len, val_len = data.getTrainValDataloader()
 

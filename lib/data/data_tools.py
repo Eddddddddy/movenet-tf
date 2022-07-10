@@ -8,6 +8,7 @@ import numpy as np
 import os
 
 import cv2
+import PIL.Image as Image
 import tensorflow as tf
 
 import math
@@ -471,12 +472,14 @@ class TensorDataset:
         # [name,h,w,keypoints...]
 
         # data = np.array(self.dataset_h5[item["img_name"]])  # write the data to hdf5 file
-        # img = Image.open(io.BytesIO(data))
-        # img = img.convert('RGB')
+        img_path = os.path.join(self.img_dir, item["img_name"])
+        img = Image.open(img_path)
+        img = img.convert('RGB')
         # img = img.resize((self.img_size, self.img_size), resample=random.choice(self.interp_methods))
-        # img = np.array(img)
+        img = img.resize((self.img_size, self.img_size))
+        img = np.array(img)
 
-        img = self.dataset_h5[item["img_name"]]
+        # img = self.dataset_h5[item["img_name"]]
 
         #### Data Augmentation
         # print(item)

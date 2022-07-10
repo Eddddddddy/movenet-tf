@@ -16,7 +16,7 @@ from lib.task.task_tools import movenetDecode
 
 
 class Data():
-    def __init__(self, cfg, dataset_h5, datasetval_h5):
+    def __init__(self, cfg, dataset_h5=[], datasetval_h5=[]):
 
         self.cfg = cfg
         # with h5py.File(cfg['dataset_h5'], 'r') as f:
