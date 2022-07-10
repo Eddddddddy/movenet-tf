@@ -19,7 +19,8 @@ def main(cfg):
     model = MoveNet(num_classes=cfg["num_classes"],
                     width_mult=cfg["width_mult"],
                     mode='train')
-    # model.build(input_shape=(1, 192, 192, 3))
+    model.build(input_shape=(1, 192, 192, 3))
+    print(model.summary())
 
     dataset, datasetval = data_read2memory(cfg)
     data = Data(cfg, dataset, datasetval)
