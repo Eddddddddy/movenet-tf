@@ -284,9 +284,9 @@ class MovenetLoss():
         # print(gt_y,gt_x)
         for idx in range(num_joints):
             gt_x = tf.convert_to_tensor(
-                [regs[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2)] + cx0, dtype=tf.float32)
+                [regs[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2)] + cx0, dtype=tf.int32)
             gt_y = tf.convert_to_tensor(
-                [regs[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2 + 1)] + cy0, dtype=tf.float32)
+                [regs[i, j, k, l] for i, j, k, l in zip(_dim0, cy0, cx0, _dim1 + idx * 2 + 1)] + cy0, dtype=tf.int32)
 
             # # gt_x = regs[_dim0, _dim1 + idx * 2, cy0, cx0].long() + cx0
             # gt_x = tf.gather(regs, (_dim0, _dim1 + idx * 2, cy0, cx0))
