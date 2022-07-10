@@ -182,8 +182,8 @@ def movenetDecode(data, kps_mask=None, mode='output', num_joints=17,
 
 
     elif mode == 'label':
-        data[0] = tf.transpose(data[0], [2, 0, 3])
-        data[1] = tf.transpose(data[1], [2, 0, 3])
+        data[0] = tf.transpose(data[0], [2, 0, 1])
+        data[1] = tf.transpose(data[1], [2, 0, 1])
 
         kps_mask = kps_mask.numpy()
 
