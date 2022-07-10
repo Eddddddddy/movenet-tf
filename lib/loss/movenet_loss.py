@@ -295,10 +295,13 @@ class MovenetLoss():
             # gt_y = tf.gather(regs, (_dim0, _dim1 + idx * 2 + 1, cy0, cx0))
             # gt_y = tf.cast(gt_y, tf.int32) + cy0
 
-            gt_x[gt_x > 47] = 47
-            gt_x[gt_x < 0] = 0
-            gt_y[gt_y > 47] = 47
-            gt_y[gt_y < 0] = 0
+            # gt_x[gt_x > 47] = 47
+            # gt_x[gt_x < 0] = 0
+            # gt_y[gt_y > 47] = 47
+            # gt_y[gt_y < 0] = 0
+
+            gt_x = tf.clip_by_value(gt_x, 0, 47)
+            gt_y = tf.clip_by_value(gt_y, 0, 47)
             # gt_x = tf.convert_to_tensor(gt_x, dtype=tf.float32)
             # gt_y = tf.convert_to_tensor(gt_y, dtype=tf.float32)
 
