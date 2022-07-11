@@ -410,11 +410,11 @@ class MovenetLoss(Loss):
         # y_pred[2] = tf.transpose(y_pred[2], [0, 3, 1, 2])
         # y_pred[3] = tf.transpose(y_pred[3], [0, 3, 1, 2])
 
-        # batch_size = y_pred[0].shape[0]
-        batch_size = self.cfg['batch_size']
+        y_pred = tf.expand_dims(y_pred, axis=0)
 
+        batch_size = y_pred[0].shape[0]
         # print("batch_size: ", batch_size)
-        tf.print(y_pred)
+        print(y_pred)
         num_joints = y_pred[0].shape[2]
         # print("num_joints: ", num_joints)
 
@@ -501,10 +501,13 @@ class MovenetLoss(Loss):
         #                      [[0.20232558139534884, 0.6456876456876457]],
         #                      [[0.2302325581395349, 0.696969696969697]]]}
 
-        heatmaps = y_true[0][:, :, :17]
-        centers = y_true[0][:, :, 17:18]
-        regs = y_true[0][:, :, 18:52]
-        offsets = y_true[0][:, :, 52:]
+        y_true_e = tf.expand_dims(y_true[0], axis=0)
+        kps_mask = tf.expand_dims(y_true[1], axis=0)
+
+        heatmaps = y_true_e[:, :, :, :17]
+        centers = y_true_e[:, :, :, 17:18]
+        regs = y_true_e[:, :, :, 18:52]
+        offsets = y_true_e[:, :, :, 52:]
 
         heatmap_loss = self.heatmapLoss(y_pred[0], heatmaps, batch_size)
 
@@ -543,10 +546,10 @@ class MovenetLoss(Loss):
         # cv2.imwrite("_centers.jpg", centers[0][0].cpu().numpy()*255)
         # b
 
-        regs_loss = self.regsLoss(y_pred[2], regs, cx0, cy0, y_true[1], batch_size, num_joints)
+        regs_loss = self.regsLoss(y_pred[2], regs, cx0, cy0, kps_mask, batch_size, num_joints)
         offset_loss = self.offsetLoss(y_pred[3], offsets,
                                       cx0, cy0, regs,
-                                      y_true[1], batch_size, num_joints)
+                                      kps_mask, batch_size, num_joints)
 
         # total_loss = heatmap_loss+center_loss+0.1*regs_loss+offset_loss
         # print(heatmap_loss,center_loss,regs_loss,offset_loss)
