@@ -28,7 +28,7 @@ def main(cfg):
 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=cfg['learning_rate'], clipvalue=cfg['clip_gradient']),
-        loss=MovenetLoss())
+        loss=MovenetLoss(cfg=cfg))
 
     def generator():
         for input, output1, output2, output3 in train_loader:
