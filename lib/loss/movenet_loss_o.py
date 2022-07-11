@@ -41,11 +41,12 @@ class JointBoneLoss():
 
 
 class MovenetLoss(Loss):
-    def __init__(self, use_target_weight=False, target_weight=[1]):
+    def __init__(self, use_target_weight=False, target_weight=[1], cfg=None):
         super(MovenetLoss, self).__init__()
         # self.mse = torch.nn.MSELoss(size_average=True)
         self.use_target_weight = use_target_weight
         self.target_weight = target_weight
+        self.cfg = cfg
 
         self.center_weight = tf.convert_to_tensor(np.load(_center_weight_path))
         self.make_center_w = False
@@ -409,9 +410,11 @@ class MovenetLoss(Loss):
         # y_pred[2] = tf.transpose(y_pred[2], [0, 3, 1, 2])
         # y_pred[3] = tf.transpose(y_pred[3], [0, 3, 1, 2])
 
-        batch_size = y_pred[0].shape[0]
+        # batch_size = y_pred[0].shape[0]
+        batch_size = self.cfg['batch_size']
+
         # print("batch_size: ", batch_size)
-        print(y_pred)
+        tf.print(y_pred)
         num_joints = y_pred[0].shape[2]
         # print("num_joints: ", num_joints)
 
@@ -498,10 +501,10 @@ class MovenetLoss(Loss):
         #                      [[0.20232558139534884, 0.6456876456876457]],
         #                      [[0.2302325581395349, 0.696969696969697]]]}
 
-        heatmaps = y_true[0][:, :, :, :17]
-        centers = y_true[0][:, :, :, 17:18]
-        regs = y_true[0][:, :, :, 18:52]
-        offsets = y_true[0][:, :, :, 52:]
+        heatmaps = y_true[0][:, :, :17]
+        centers = y_true[0][:, :, 17:18]
+        regs = y_true[0][:, :, 18:52]
+        offsets = y_true[0][:, :, 52:]
 
         heatmap_loss = self.heatmapLoss(y_pred[0], heatmaps, batch_size)
 
