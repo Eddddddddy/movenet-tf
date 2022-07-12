@@ -145,7 +145,7 @@ class MovenetLoss():
 
         loss = loss * weight_mask  # *gamma
 
-        loss = tf.reduce_sum(loss) / target.shape[0] / target.shape[1]
+        loss = tf.reduce_sum(loss) / target.shape[0] / target.shape[3]
         return loss
 
     ###############

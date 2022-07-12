@@ -14,6 +14,25 @@ class MoveNet(tf.keras.Model):
         x = self.header(x)
         return x
 
+    def train_step(self, data):
+        imgs, labels = data
+        with tf.GradientTape() as tape:
+            y_pred = self(imgs)
+            loss = self.compiled_loss(y_pred, labels)
+
+        # Compute gradients
+        trainable_variables = self.trainable_variables
+        grads = tape.gradient(loss, trainable_variables)
+
+        # Update weights
+        self.optimizer.apply_gradients(zip(grads, trainable_variables))
+
+        # Update metrics
+        # self.compiled_metrics.update_state(labels, y_pred)
+
+        return loss
+
+
     # def _initialize_weights(self):
     #     # get all the trainable variables
     #     trainable_variables = self.trainable_variables

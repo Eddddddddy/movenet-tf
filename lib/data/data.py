@@ -135,12 +135,12 @@ class Data():
         # 2: ndarray (17,)
         # 3: str
         # v = tf.type_spec_from_value(d.index(0))
-        train_loader, val_loader, train_loader_x, train_loader_y = getDataLoader("trainval",
+        train_loader, val_loader, train_loader_x, train_loader_y, train_loader_z= getDataLoader("trainval",
                                                                                  input_data,
                                                                                  self.cfg,
                                                                                  self.dataset_h5,
                                                                                  self.datasetval_h5)
-        return train_loader, val_loader, train_loader_x, train_loader_y, len(train_label_list), len(val_label_list)
+        return train_loader, val_loader, train_loader_x, train_loader_y, train_loader_z, len(train_label_list), len(val_label_list)
 
     # def getTrainDataloader(self):
     #     data_names = getFileNames(self.cfg['train_path'])

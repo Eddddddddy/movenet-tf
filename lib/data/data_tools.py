@@ -582,6 +582,11 @@ class TensorDataset:
             return img
         elif self.ot == 2:
             return [labels, kps_mask, img_path]
+        elif self.ot == 3:
+            _b = np.zeros([labels.shape[0], labels.shape[1], kps_mask.shape[0]])
+            _b[0, 0] = kps_mask
+            labels = np.concatenate([labels, _b], axis=2)
+            return img, labels
         else:
             return img, labels, kps_mask, img_path
 
@@ -607,6 +612,10 @@ def getDataLoader(mode, input_data, cfg, dataset_h5, datasetval_h5):
             tf.TensorSpec(shape=(48, 48, 86), dtype=tf.float32),
             tf.TensorSpec(shape=(17,), dtype=tf.float32),
             tf.TensorSpec(shape=(), dtype=tf.string)
+        )
+        ot_z = (
+            tf.TensorSpec(shape=(192, 192, 3), dtype=tf.float32),
+            tf.TensorSpec(shape=(48, 48, 86+17), dtype=tf.float32)
         )
         train_loader = tf.data.Dataset.from_generator(TensorDataset(input_data[0],
                                                                     cfg['img_path'],
@@ -642,7 +651,16 @@ def getDataLoader(mode, input_data, cfg, dataset_h5, datasetval_h5):
                                                                   ),
                                                     output_signature=ot).batch(cfg['batch_size'])
 
-        return train_loader, val_loader, train_loader_x, train_loader_y
+        train_loader_z = tf.data.Dataset.from_generator(TensorDataset(input_data[0],
+                                                                      cfg['img_path'],
+                                                                      cfg['img_size'],
+                                                                      dataset_h5,
+                                                                      DataAug(cfg['img_size']),
+                                                                      3
+                                                                      ),
+                                                        output_signature=ot_z).batch(cfg['batch_size'])
+
+        return train_loader, val_loader, train_loader_x, train_loader_y, train_loader_z
 
     # elif mode == "val":
     #

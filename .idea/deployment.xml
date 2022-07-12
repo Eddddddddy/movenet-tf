@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="dw3y21@yann.ecs.soton.ac.uk:22 (3)" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="dw3y21@yann.ecs.soton.ac.uk:22 (3)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/data/dw3y21/pythonProject/movenet-tf" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

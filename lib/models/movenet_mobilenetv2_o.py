@@ -6,20 +6,47 @@ class MoveNet(tf.keras.Model):
     def __init__(self, num_classes, width_mult=1, mode='train'):
         super().__init__()
         self.backbone = Backbone()
-        self.header = Header(num_classes, mode)
+        self.header1 = Header1(num_classes, mode)
+        self.header2 = Header2(num_classes, mode)
+        self.header3 = Header3(num_classes, mode)
+        self.header4 = Header4(num_classes, mode)
         # self._initialize_weights()
 
     def call(self, inputs):
         x = self.backbone(inputs)
-        x = self.header(x)
-        return x
+        x1 = self.header1(x)
+        x2 = self.header2(x)
+        x3 = self.header3(x)
+        x4 = self.header4(x)
+        output = tf.concat([x1, x2, x3, x4], axis=-1)
+        return output
+
+    def train_step(self, data):
+        imgs, labels = data
+        with tf.GradientTape() as tape:
+            # y_pred0, y_pred1, y_pred2, y_pred3 = self(imgs)
+            y_pred = self(imgs)
+            loss = self.compiled_loss(y_pred, labels)
+            # loss = heatmap_loss, center_loss, regs_loss, offset_loss, bone_loss
+        # Compute gradients
+        trainable_variables = self.trainable_variables
+        grads = tape.gradient(loss, trainable_variables)
+
+        # Update weights
+        self.optimizer.apply_gradients(zip(grads, trainable_variables))
+
+        # Update metrics
+        # self.compiled_metrics.update_state(labels, y_pred)
+
+        return {"loss": loss}
+
 
     # def _initialize_weights(self):
     #     # get all the trainable variables
     #     trainable_variables = self.trainable_variables
 
 
-class Backbone(tf.keras.Model):
+class Backbone(tf.keras.layers.Layer):
     def __init__(self):
         super(Backbone, self).__init__()
 
@@ -81,7 +108,7 @@ class Backbone(tf.keras.Model):
         return f4
 
 
-class Header(tf.keras.Model):
+class Header1(tf.keras.layers.Layer):
     def __init__(self, num_classes, mode='train'):
         super().__init__()
         self.mode = mode
@@ -92,17 +119,100 @@ class Header(tf.keras.Model):
                                    use_bias=True, activation='sigmoid')
         ])
 
+    # def argmax2loc(self, x, h=48, w=48):
+    #     y0 = tf.divide(x, w).to_int64()
+    #     x0 = tf.subtract(x, y0 * w).to_int64()
+    #     return x0, y0
+
+    def call(self, inputs):
+        # res = []
+
+        if self.mode == 'train':
+            h1 = self.header_heatmaps(inputs)
+
+        # elif self.mode == 'test':
+        #     pass
+        #
+        # elif self.mode == 'all':
+        #     pass
+        #
+        # else:
+        #     print("Error: mode is not defined")
+
+        return h1
+
+class Header2(tf.keras.layers.Layer):
+    def __init__(self, num_classes, mode='train'):
+        super().__init__()
+        self.mode = mode
+
         self.header_centers = tf.keras.Sequential([
             dw_conv3(24, 96),
             tf.keras.layers.Conv2D(filters=1, kernel_size=(1, 1), strides=(1, 1), padding="valid", use_bias=True,
                                    activation='sigmoid')
         ])
 
+    # def argmax2loc(self, x, h=48, w=48):
+    #     y0 = tf.divide(x, w).to_int64()
+    #     x0 = tf.subtract(x, y0 * w).to_int64()
+    #     return x0, y0
+
+    def call(self, inputs):
+
+        if self.mode == 'train':
+            h2 = self.header_centers(inputs)
+
+        # elif self.mode == 'test':
+        #     pass
+        #
+        # elif self.mode == 'all':
+        #     pass
+        #
+        # else:
+        #     print("Error: mode is not defined")
+
+        return h2
+
+class Header3(tf.keras.layers.Layer):
+    def __init__(self, num_classes, mode='train'):
+        super().__init__()
+        self.mode = mode
+
+
+
         self.header_regs = tf.keras.Sequential([
             dw_conv3(24, 96),
             tf.keras.layers.Conv2D(filters=num_classes * 2, kernel_size=(1, 1), strides=(1, 1), padding="valid",
                                    use_bias=True)
         ])
+
+
+    # def argmax2loc(self, x, h=48, w=48):
+    #     y0 = tf.divide(x, w).to_int64()
+    #     x0 = tf.subtract(x, y0 * w).to_int64()
+    #     return x0, y0
+
+    def call(self, inputs):
+
+        if self.mode == 'train':
+            h3 = self.header_regs(inputs)
+
+        # elif self.mode == 'test':
+        #     pass
+        #
+        # elif self.mode == 'all':
+        #     pass
+        #
+        # else:
+        #     print("Error: mode is not defined")
+
+        return h3
+
+class Header4(tf.keras.layers.Layer):
+    def __init__(self, num_classes, mode='train'):
+        super().__init__()
+        self.mode = mode
+
 
         self.header_offsets = tf.keras.Sequential([
             dw_conv3(24, 96),
@@ -116,14 +226,10 @@ class Header(tf.keras.Model):
     #     return x0, y0
 
     def call(self, inputs):
-        res = []
+
 
         if self.mode == 'train':
-            h1 = self.header_heatmaps(inputs)
-            h2 = self.header_centers(inputs)
-            h3 = self.header_regs(inputs)
             h4 = self.header_offsets(inputs)
-            res = [h1, h2, h3, h4]
 
         # elif self.mode == 'test':
         #     pass
@@ -134,10 +240,10 @@ class Header(tf.keras.Model):
         # else:
         #     print("Error: mode is not defined")
 
-        return res
+        return h4
 
 
-class InvertedResidual(tf.keras.Model):
+class InvertedResidual(tf.keras.layers.Layer):
     def __init__(self, inp, oup, stride, expand_ratio, n):
         super(InvertedResidual, self).__init__()
         assert stride in [1, 2]
